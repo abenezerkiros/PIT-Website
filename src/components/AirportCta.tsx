@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 // TODO: download this from the Figma asset URL (it expires in ~7 days)
 // and move it into /public, then point this at the local path.
 const ctaBackgroundImage =
-  "https://www.figma.com/api/mcp/asset/c9de0865-1b12-4316-8532-b10a5ba3b269.png";
+  "/Airport.jpeg";
 
 const arrowOutwardIcon =
   "https://www.figma.com/api/mcp/asset/8d3b17e1-dc7e-40ef-9415-e9b053aba2ce.svg";
@@ -151,12 +151,7 @@ BOOK
                 ease,
               }}
             >
-              <Image
-                src={arrowOutwardIcon}
-                alt=""
-                width={24}
-                height={24}
-              />
+         
             </motion.span>
           </motion.button>
         </motion.div>

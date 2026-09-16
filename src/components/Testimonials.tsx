@@ -16,7 +16,7 @@ const arrowRightIcon =
   "https://www.figma.com/api/mcp/asset/1b6487e1-d927-423e-ba7b-c4ffb3f9b3ab.svg";
 
 const fiveStarRating =
-  "https://www.figma.com/api/mcp/asset/b5193064-fd28-456a-baaf-c3e564945101.svg";
+  "/5Star.png";
 
 type Testimonial = {
   quote: string;
@@ -98,23 +98,7 @@ function TestimonialCard({
 
       {/* Client information */}
       <div className="mt-7 flex items-center gap-4 pl-4">
-        <motion.div
-          className="relative size-[64px] shrink-0 overflow-hidden rounded-full"
-          whileHover={{
-            scale: 1.04,
-          }}
-          transition={{
-            duration: 0.35,
-            ease,
-          }}
-        >
-          <Image
-            src={testimonial.avatar}
-            alt={testimonial.name}
-            fill
-            className="object-cover"
-          />
-        </motion.div>
+     
 
         <div>
           <p className="text-xl font-bold text-black">
@@ -280,59 +264,75 @@ export default function Testimonials() {
             ease,
           }}
         >
-          <motion.button
-            type="button"
-            onClick={() => scrollToIndex(activeIndex - 1)}
-            disabled={activeIndex === 0}
-            aria-label="Previous testimonials"
-            whileHover={{
-              y: -2,
-            }}
-            whileTap={{
-              scale: 0.95,
-            }}
-            transition={{
-              duration: 0.3,
-              ease,
-            }}
-            className="flex size-11 items-center justify-center rounded-full border border-black/20 transition-colors duration-300 hover:border-black/50 disabled:pointer-events-none disabled:opacity-30"
-          >
-            <Image
-              src={arrowLeftIcon}
-              alt=""
-              width={20}
-              height={20}
-              className="rotate-90"
-            />
-          </motion.button>
+  <motion.button
+  type="button"
+  onClick={() => scrollToIndex(activeIndex - 1)}
+  disabled={activeIndex === 0}
+  aria-label="Previous testimonials"
+  whileHover={{
+    y: -2,
+  }}
+  whileTap={{
+    scale: 0.95,
+  }}
+  transition={{
+    duration: 0.3,
+    ease,
+  }}
+  className="flex size-11 items-center justify-center rounded-full border border-black/20 transition-colors duration-300 hover:border-black/50 disabled:pointer-events-none disabled:opacity-30"
+>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M15 18L9 12L15 6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</motion.button>
 
-          <motion.button
-            type="button"
-            onClick={() => scrollToIndex(activeIndex + 1)}
-            disabled={
-              activeIndex === testimonials.length - 1
-            }
-            aria-label="Next testimonials"
-            whileHover={{
-              y: -2,
-            }}
-            whileTap={{
-              scale: 0.95,
-            }}
-            transition={{
-              duration: 0.3,
-              ease,
-            }}
-            className="flex size-11 items-center justify-center rounded-full border border-black/20 transition-colors duration-300 hover:border-black/50 disabled:pointer-events-none disabled:opacity-30"
-          >
-            <Image
-              src={arrowRightIcon}
-              alt=""
-              width={20}
-              height={20}
-                className="-rotate-90"
-            />
-          </motion.button>
+<motion.button
+  type="button"
+  onClick={() => scrollToIndex(activeIndex - 1)}
+  disabled={activeIndex === 0}
+  aria-label="Previous testimonials"
+  whileHover={{
+    y: -2,
+  }}
+  whileTap={{
+    scale: 0.95,
+  }}
+  transition={{
+    duration: 0.3,
+    ease,
+  }}
+  className="flex size-11 items-center justify-center rounded-full border border-black/20 transition-colors duration-300 hover:border-black/50 disabled:pointer-events-none disabled:opacity-30"
+>
+<svg
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <path
+    d="M9 6L15 12L9 18"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+</svg>
+</motion.button>
         </motion.div>
       </div>
     </section>

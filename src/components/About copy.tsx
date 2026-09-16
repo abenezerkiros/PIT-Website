@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 
 const aboutImage = "/image.png";
 const BOOKING_URL = "https://book.mylimobiz.com/v4/pittransportation";
-const arrowRightIcon =
-  "https://www.figma.com/api/mcp/asset/254602a6-f854-420c-b543-4134e50845c4.svg";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -129,12 +127,7 @@ BOOK
 </a>
             </span>
 
-            <Image
-              src={arrowRightIcon}
-              alt=""
-              width={24}
-              height={24}
-            />
+        
           </motion.button>
         </motion.div>
       </div>

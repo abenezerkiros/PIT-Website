@@ -10,6 +10,7 @@ import GetAQuote from "@/components/GetAQuote";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import AboutUsCopy from "@/components/About copy";
+import Booking from "@/components/Booking";
 export default function Home() {
   return (
     <main>
@@ -23,6 +24,7 @@ export default function Home() {
       <AirportCta/>
       <Testimonials/>
       <Faqs/>
+      <Booking/>
       <GetAQuote/>
       <Footer/>
     </main>

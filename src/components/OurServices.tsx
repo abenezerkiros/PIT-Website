@@ -6,14 +6,10 @@ import { AnimatePresence, motion } from "framer-motion";
 
 // TODO: download these from the Figma asset URLs (they expire in ~7 days)
 // and move them into /public, then point these at local paths.
-const imgAi =
-  "https://www.figma.com/api/mcp/asset/6cdb35dd-bd70-43e3-b894-a477a1d3070b.png";
-const imgAi1 =
-  "https://www.figma.com/api/mcp/asset/713aa394-4af1-4fd9-a0df-24a80614aed9.png";
-const imgAi2 =
-  "https://www.figma.com/api/mcp/asset/ea5a8b2f-7543-4049-8f38-d15724f43887.png";
-const arrowIcon =
-  "https://www.figma.com/api/mcp/asset/aa97677c-1a63-41c4-b333-44382303153a.svg";
+const imgAi ="/StepImage.jpg"
+const imgAi1 ="/StepImage1.jpg";
+const imgAi2 ="/StepImage2.jpg";
+const arrowIcon ="/ArrowRight.png"
 
 const sharedContent = {
   paragraph:

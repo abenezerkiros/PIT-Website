@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 // TODO: download this from the Figma asset URL (it expires in ~7 days)
 // and move it into /public, then point this at the local path.
 const bannerImage =
-  "https://www.figma.com/api/mcp/asset/57f20e3c-56c3-41ff-a694-17df2ce60de0.png";
-
+"/FinalCta.jpeg"
 const ease = [0.22, 1, 0.36, 1] as const;
 const BOOKING_URL = "https://book.mylimobiz.com/v4/pittransportation";
 export default function GetAQuote() {

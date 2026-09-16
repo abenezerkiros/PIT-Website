@@ -3,9 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-
-const arrowDownIcon =
-  "https://www.figma.com/api/mcp/asset/a45c575f-60d7-4448-8fec-ba75aa54cb74.svg";
+const arrowDownIcon = "/ArrowDown.png"
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -73,7 +71,8 @@ export default function HeroSection() {
             delay: 0.3,
           }}
         >
-          Best Luxury Chauffeur Services In District Of Columbia
+          Mobility for the world&apos;s most important journeys, wherever that
+          journey may take you.
         </motion.h1>
 
         <motion.p
@@ -92,7 +91,8 @@ export default function HeroSection() {
             delay: 0.5,
           }}
         >
-          Experience Washington in Comfort, Style &amp; Professional Elegance
+          Premier is the transportation partner for global leaders, where true
+          luxury is being seen, known, and served before you arrive.
         </motion.p>
       </motion.div>
 
@@ -113,12 +113,12 @@ export default function HeroSection() {
           delay: 0.8,
         }}
       >
-        <p className="whitespace-nowrap text-center text-base tracking-wide text-white">
-          Scroll
+        <p className="text-center text-base tracking-wide text-white">
+          Enter the Premier Standard.
         </p>
 
         <motion.div
-          className="relative size-6"
+          className="relative size-6 shrink-0"
           animate={{
             y: [0, 4, 0],
           }}

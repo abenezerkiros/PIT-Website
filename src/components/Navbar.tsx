@@ -5,9 +5,8 @@ import Image from "next/image";
 
 // TODO: download this from the Figma asset URL (it expires in ~7 days)
 // and move it into /public, then point this at the local path.
-const logoImage =
-  "https://www.figma.com/api/mcp/asset/dcd7357a-3558-4c66-b5c6-5d8fd7ba61d2.png";
 
+const logoImage = "/logo.png";
 const navLinks = [
   { label: "Airport", href: "#airport" },
   { label: "Services", href: "#services" },

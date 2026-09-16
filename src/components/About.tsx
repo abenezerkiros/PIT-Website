@@ -4,8 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const aboutImage =
-  "https://www.figma.com/api/mcp/asset/6669207b-fd95-4af3-b20a-e68eb7f3f8a6.png";
-
+"/AboutSection.jpg"
 const arrowRightIcon =
   "https://www.figma.com/api/mcp/asset/254602a6-f854-420c-b543-4134e50845c4.svg";
 
@@ -130,12 +129,7 @@ BOOK
 </a>
             </span>
 
-            <Image
-              src={arrowRightIcon}
-              alt=""
-              width={24}
-              height={24}
-            />
+  
           </motion.button>
         </motion.div>
       </div>
