@@ -62,7 +62,7 @@ const vehicles: Vehicle[] = [
       "A classic European sedan. Clean, comfortable, and understated.",
     bestFor: "Business travel, point-to-point transfers, concierge service.",
     category: "Individual Travel",
-    image: "/bmw-740i.png",
+    image: "/mercedes-e-class.png",
   },
   {
     id: "sprinter",
