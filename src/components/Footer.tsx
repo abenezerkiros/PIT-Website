@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 
 // TODO: download this from the Figma asset URL (it expires in ~7 days)
 // and move it into /public, then point this at the local path.
-const logoImage =
-"/Logo.png"
+const logoImage ="/logo.png"
 type FooterColumn = {
   title: string;
   links: string[];
