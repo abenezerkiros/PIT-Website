@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   AnimatePresence,
+  animate,
   motion,
   useReducedMotion,
 } from "framer-motion";
@@ -141,7 +142,7 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   return (
     <motion.article
       data-vehicle-card
-      className="relative isolate h-[540px] w-full shrink-0 snap-start overflow-hidden rounded-[20px] bg-[#efefef] sm:h-[490px] sm:w-[580px] lg:w-[620px]"
+      className="relative isolate h-[540px] w-full min-w-0 overflow-hidden rounded-[20px] bg-[#efefef] sm:h-[490px]"
       onPointerEnter={(event) => {
         if (event.pointerType === "mouse") setHovered(true);
       }}
@@ -161,7 +162,7 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           src={vehicle.image}
           alt={vehicle.name}
           fill
-          sizes="(max-width: 639px) 90vw, 620px"
+          sizes="(min-width: 1584px) 704px, (min-width: 1024px) calc((100vw - 176px) / 2), (min-width: 768px) calc(100vw - 144px), calc(100vw - 48px)"
           className="object-contain"
         />
       </motion.div>
@@ -294,6 +295,35 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
 function VehicleSlider({ items }: { items: Vehicle[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  const [perPage, setPerPage] = useState(1);
+  const animationRef = useRef<{ stop: () => void } | null>(null);
+  const targetPageRef = useRef<number | null>(null);
+  const pages = Array.from(
+    { length: Math.ceil(items.length / perPage) },
+    (_, index) => items.slice(index * perPage, (index + 1) * perPage),
+  );
+
+  function stopScroll() {
+    animationRef.current?.stop();
+    animationRef.current = null;
+    targetPageRef.current = null;
+    if (scrollRef.current) scrollRef.current.style.scrollSnapType = "";
+  }
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => {
+      stopScroll();
+      setPerPage(query.matches ? 2 : 1);
+    };
+    update();
+    query.addEventListener("change", update);
+    return () => {
+      query.removeEventListener("change", update);
+      stopScroll();
+    };
+  }, []);
+
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
@@ -308,9 +338,15 @@ function VehicleSlider({ items }: { items: Vehicle[] }) {
       setCanNext(container.scrollLeft < maxScroll - 2);
     };
 
+    container.scrollLeft = 0;
     updateControls();
 
-    const observer = new ResizeObserver(updateControls);
+    const observer = new ResizeObserver(() => {
+      stopScroll();
+      // Keep a complete page aligned after resizing the viewport.
+      container.scrollLeft = 0;
+      updateControls();
+    });
     observer.observe(container);
 
     container.addEventListener("scroll", updateControls, {
@@ -321,33 +357,50 @@ function VehicleSlider({ items }: { items: Vehicle[] }) {
       observer.disconnect();
       container.removeEventListener("scroll", updateControls);
     };
-  }, []);
+  }, [perPage, items]);
 
   function move(direction: -1 | 1) {
     const container = scrollRef.current;
     if (!container) return;
-
-    const cards = Array.from(
-      container.querySelectorAll<HTMLElement>("[data-vehicle-card]")
+    const pageElements = Array.from(
+      container.querySelectorAll<HTMLElement>("[data-vehicle-page]"),
     );
+    if (!pageElements.length) return;
 
-    if (!cards.length) return;
+    const origin = pageElements[0].offsetLeft;
+    const positions = pageElements.map((page) => page.offsetLeft - origin);
+    const nearestPage = positions.reduce(
+      (nearest, position, index) =>
+        Math.abs(position - container.scrollLeft) <
+        Math.abs(positions[nearest] - container.scrollLeft) ? index : nearest,
+      0,
+    );
+    const nextPage = Math.max(
+      0,
+      Math.min((targetPageRef.current ?? nearestPage) + direction, positions.length - 1),
+    );
+    const target = positions[nextPage];
+    stopScroll();
 
-    const origin = cards[0].offsetLeft;
-    const positions = cards.map((card) => card.offsetLeft - origin);
-    const current = container.scrollLeft;
-    const maxScroll = container.scrollWidth - container.clientWidth;
+    if (reduceMotion) {
+      container.scrollLeft = target;
+      return;
+    }
 
-    const target =
-      direction === 1
-        ? positions.find((position) => position > current + 4) ?? maxScroll
-        : [...positions]
-            .reverse()
-            .find((position) => position < current - 4) ?? 0;
-
-    container.scrollTo({
-      left: Math.max(0, Math.min(target, maxScroll)),
-      behavior: reduceMotion ? "auto" : "smooth",
+    targetPageRef.current = nextPage;
+    // Disable snapping only during the eased arrow animation, then restore it
+    // exactly at a page boundary. Touch/trackpad scrolling retains native snap.
+    container.style.scrollSnapType = "none";
+    animationRef.current = animate(container.scrollLeft, target, {
+      duration: 1.35,
+      ease: [0.45, 0, 0.55, 1],
+      onUpdate: (value) => { container.scrollLeft = value; },
+      onComplete: () => {
+        container.scrollLeft = target;
+        container.style.scrollSnapType = "";
+        animationRef.current = null;
+        targetPageRef.current = null;
+      },
     });
   }
 
@@ -358,16 +411,38 @@ function VehicleSlider({ items }: { items: Vehicle[] }) {
         role="region"
         aria-label="Fleet vehicles"
         tabIndex={0}
-        className="relative flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain pb-4 pt-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:gap-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        onPointerDown={stopScroll}
+        onWheel={stopScroll}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            move(event.key === "ArrowRight" ? 1 : -1);
+          } else {
+            stopScroll();
+          }
+        }}
+        className="relative grid auto-cols-[100%] grid-flow-col snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain pb-4 pt-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:gap-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {items.map((vehicle) => (
-          <VehicleCard key={vehicle.id} vehicle={vehicle} />
+        {pages.map((page, index) => (
+          <div
+            key={page[0].id}
+            data-vehicle-page
+            role="group"
+            aria-label={`Fleet page ${index + 1} of ${pages.length}`}
+            className="grid min-w-0 snap-start snap-always gap-5 sm:gap-8"
+            style={{ gridTemplateColumns: `repeat(${perPage}, minmax(0, 1fr))` }}
+          >
+            {page.map((vehicle) => (
+              <VehicleCard key={vehicle.id} vehicle={vehicle} />
+            ))}
+          </div>
         ))}
       </div>
 
       <div className="mt-6 flex items-center justify-between">
         <p className="text-xs tracking-wide text-white/50">
-          {items.length} vehicles · Scroll to explore
+ 
         </p>
 
         <div className="flex gap-3">
@@ -412,33 +487,93 @@ export default function Fleet({
   return (
     <section
       aria-labelledby="fleet-heading"
+      id="fleet"
       className="overflow-hidden bg-[#121212] px-6 py-20 text-white md:px-[72px] md:py-28"
     >
       <div className="mx-auto w-full max-w-[1440px]">
         {/* Introduction */}
-        <motion.div
-          className="mx-auto max-w-[780px] text-center"
-          initial={{ opacity: 0, y: reduceMotion ? 0 : 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: reduceMotion ? 0 : 0.8, ease }}
-        >
-          <p className="mb-5 text-xs font-medium uppercase tracking-[0.24em] text-white/50">
-            Our Vehicles
-          </p>
+   {/* Introduction */}
+<motion.div
+  className="mx-auto max-w-[780px] text-center"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: false, amount: 0.3 }}
+  variants={{
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: reduceMotion ? 0 : 0.18,
+      },
+    },
+  }}
+>
+  <motion.p
+    className="mb-5 text-xs font-medium uppercase tracking-[0.24em] text-[#957E5E]"
+    variants={{
+      hidden: {
+        opacity: reduceMotion ? 1 : 0,
+        y: reduceMotion ? 0 : 35,
+        transition: { duration: reduceMotion ? 0 : 0.35 },
+      },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: reduceMotion ? 0 : 0.9,
+          ease,
+        },
+      },
+    }}
+  >
+    Our Vehicles
+  </motion.p>
 
-          <h2
-            id="fleet-heading"
-            className="text-4xl font-medium leading-tight tracking-[-0.035em] md:text-5xl lg:text-6xl"
-          >
-            Our World Class Fleet
-          </h2>
+  <motion.h2
+    id="fleet-heading"
+    className="text-4xl font-medium leading-tight tracking-[-0.035em] md:text-5xl lg:text-6xl"
+    variants={{
+      hidden: {
+        opacity: reduceMotion ? 1 : 0,
+        y: reduceMotion ? 0 : 65,
+        scale: reduceMotion ? 1 : 0.94,
+        transition: { duration: reduceMotion ? 0 : 0.35 },
+      },
+      visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+          duration: reduceMotion ? 0 : 1.15,
+          ease,
+        },
+      },
+    }}
+  >
+    Our World Class Fleet
+  </motion.h2>
 
-          <p className="mx-auto mt-6 max-w-[650px] text-lg leading-8 text-white/65">
-            Every vehicle is chosen for a reason and prepared to the same
-            standard. Explore what&apos;s available for your journey.
-          </p>
-        </motion.div>
+  <motion.p
+    className="mx-auto mt-6 max-w-[650px] text-lg leading-8 text-white/65"
+    variants={{
+      hidden: {
+        opacity: reduceMotion ? 1 : 0,
+        y: reduceMotion ? 0 : 45,
+        transition: { duration: reduceMotion ? 0 : 0.35 },
+      },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: reduceMotion ? 0 : 1,
+          ease,
+        },
+      },
+    }}
+  >
+    Every vehicle is chosen for a reason and prepared to the same
+    standard. Explore what&apos;s available for your journey.
+  </motion.p>
+</motion.div>
 
         {/* Original tab styling, aligned left */}
         <div
@@ -503,7 +638,7 @@ export default function Fleet({
           </p>
 
           <a
-            href={contactHref}
+            href={"#contact"}
             className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-6 rounded-sm border border-[#c9a227]/60 px-7 py-4 text-sm font-medium tracking-wide text-[#dfbf64] transition-colors duration-300 hover:bg-[#c9a227] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
           >
             Start a Conversation

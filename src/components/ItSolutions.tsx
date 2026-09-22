@@ -1,8 +1,14 @@
 "use client";
 
-import { motion } from "framer-motion";
-
-const ease = [0.22, 1, 0.36, 1] as const;
+import { useEffect, useId, useRef, useState } from "react";
+import Image from "next/image";
+import {
+  motion,
+  useReducedMotion,
+  useInView,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 
 const pillars = [
   {
@@ -10,124 +16,196 @@ const pillars = [
     title: "A Communications Team Always at Your Service",
     description:
       "Whatever the hour, wherever you are, a Client Experience Lead is available—listening, understanding, and making sure nothing is left to chance.",
+      src:"/conversation.jpg"
   },
   {
     icon: "journey",
     title: "Your Journey, Curated with Intelligence",
     description:
       "Before your journey begins, your preferences become your chauffeur’s briefing. They arrive knowing more than the route. They arrive knowing you.",
+      src:"/Curated-trip.png"
   },
   {
     icon: "chauffeur",
     title: "White Glove Chauffeur Service",
     description:
       "Every Premier chauffeur is rigorously trained. The difference is the match—we choose the person whose character fits your journey, not whoever is closest.",
+            src:"/white-glove.png"
   },
   {
     icon: "vehicle",
     title: "Vehicles That Ensure You Arrive Like No Other",
     description:
       "A fleet of the latest luxury vehicles, European and American, increasingly electric—selected and prepared for each journey.",
+            src:"/Fleet.png"
   },
 ] as const;
 
-type PillarIconName = (typeof pillars)[number]["icon"];
-
-function PillarIcon({ name }: { name: PillarIconName }) {
-  return (
-    <svg
-      width="32"
-      height="32"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {name === "communications" && (
-        <>
-          <path d="M4 13v-1a8 8 0 0 1 16 0v1" />
-          <rect x="3" y="11" width="4" height="7" rx="2" />
-          <rect x="17" y="11" width="4" height="7" rx="2" />
-          <path d="M19 18a3 3 0 0 1-3 3h-3" />
-          <path d="M11 21h2" />
-        </>
-      )}
-
-      {name === "journey" && (
-        <>
-          <circle cx="5" cy="18" r="2" />
-          <path d="M7 18h8a4 4 0 0 0 0-8h-4a3 3 0 0 1 0-6h3" />
-          <path d="m17 2 1.2 2.8L21 6l-2.8 1.2L17 10l-1.2-2.8L13 6l2.8-1.2L17 2Z" />
-        </>
-      )}
-
-      {name === "chauffeur" && (
-        <>
-          <circle cx="12" cy="7" r="3" />
-          <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
-          <path d="m9 13 3 3 3-3" />
-          <path d="m12 16-1.5 3 1.5 2 1.5-2-1.5-3Z" />
-        </>
-      )}
-
-      {name === "vehicle" && (
-        <>
-          <path d="m5 10 1.5-4A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1L19 10" />
-          <rect x="3" y="10" width="18" height="8" rx="2" />
-          <path d="M5 18v2M19 18v2M7 14h2M15 14h2" />
-        </>
-      )}
-    </svg>
-  );
-}
+const pillarLabels = [
+  "Client communications",
+  "Curated journeys",
+  "Chauffeur service",
+  "Our fleet",
+] as const;
 
 function FeatureCard({
   pillar,
   index,
+  contactHref,
+  hasEntered,
 }: {
   pillar: (typeof pillars)[number];
   index: number;
+  contactHref: string;
+  hasEntered: boolean;
 }) {
-  return (
-    <motion.article
-      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] p-7 transition-colors duration-500 hover:border-white/25 hover:bg-white/[0.065] lg:p-6 xl:p-8"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.75, delay: index * 0.08, ease }}
-      whileHover={{ y: -5, transition: { duration: 0.4, ease } }}
-    >
-      {/* Icon and pillar number */}
-      <div className="mb-9 flex items-center justify-between">
-        <div className="flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.025] text-white/85 transition-colors duration-500 group-hover:border-white/25 group-hover:text-white">
-          <PillarIcon name={pillar.icon} />
-        </div>
+  const reduceMotion = useReducedMotion();
+  // Only the first pair enters on vertical arrival. Later slides are static.
+  const show = reduceMotion || hasEntered || index >= 2;
+  const entranceX = index % 2 === 0 ? -100 : 100;
 
-        <span
-          aria-hidden="true"
-          className="text-xs tracking-[0.2em] text-white/40"
-        >
-          0{index + 1}
-        </span>
+  return (
+    <div className="grid min-w-0 overflow-hidden rounded-[20px]">
+    <motion.article
+      initial={false}
+      animate={{
+        opacity: show ? 1 : 0,
+        x: show ? 0 : entranceX,
+      }}
+      transition={{
+        duration: reduceMotion || index >= 2 ? 0 : 1.1,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      aria-label={`${index + 1} of ${pillars.length}: ${pillarLabels[index]}`}
+      className="group flex min-w-0 flex-col rounded-[20px] p-2 pb-6 hover:bg-[var(--pillar-surface)] focus-within:bg-[var(--pillar-surface)]"
+    >
+      <div className="relative aspect-[2.06/1] overflow-hidden rounded-[10px] bg-black/[0.035]">
+        <Image
+          src={pillar.src}
+          alt="Mercedes-Benz S-Class"
+          fill
+          sizes="(min-width: 1424px) 616px, (min-width: 768px) calc((100vw - 192px) / 2), calc(100vw - 64px)"
+          className="object-cover"
+        />
       </div>
 
-      {/* Reserve equal heading space across each desktop row */}
-      <h3 className="text-2xl font-medium leading-[1.35] tracking-[-0.02em] text-white sm:min-h-[130px]">
-        {pillar.title}
-      </h3>
-
-      <div
-        aria-hidden="true"
-        className="my-7 h-px w-16 bg-gradient-to-r from-white/50 to-white/5 transition-[width] duration-500 group-hover:w-24"
-      />
-
-      <p className="text-base leading-7 text-white/70">
-        {pillar.description}
-      </p>
+      <div className="flex flex-1 flex-col px-3 pt-6 md:px-3 md:pt-7">
+        <p className="mb-2 text-sm text-[#c9a227] font-medium opacity-60 md:text-base">
+          {pillarLabels[index]}
+        </p>
+        <h3 className="text-2xl font-semibold leading-[1.18] tracking-[-0.025em] md:text-[30px] lg:text-[32px]">
+          {pillar.title}
+        </h3>
+        <p className="mt-3 text-base leading-[1.5] md:text-lg">
+          {pillar.description}
+        </p>
+     
+      </div>
     </motion.article>
+    </div>
+  );
+}
+
+function PillarsCarousel({ contactHref }: { contactHref: string }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  // The stationary carousel viewport triggers once, independently of its slides.
+  const hasEntered = useInView(trackRef, { once: false, amount: 0.18 });
+  const trackId = useId();
+  const reduceMotion = useReducedMotion();
+  const [position, setPosition] = useState({ start: true, end: false });
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const update = () => {
+      setPosition({
+        start: track.scrollLeft <= 2,
+        end: track.scrollLeft >= track.scrollWidth - track.clientWidth - 2,
+      });
+    };
+
+    update();
+    track.addEventListener("scroll", update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(track);
+
+    return () => {
+      track.removeEventListener("scroll", update);
+      observer.disconnect();
+    };
+  }, []);
+
+  const move = (direction: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    track.scrollBy({
+      left: direction * (track.clientWidth + gap),
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  };
+
+  return (
+    <div role="region" aria-roledescription="carousel" aria-label="The four pillars of Premier service">
+      <div
+        id={trackId}
+        ref={trackRef}
+        tabIndex={0}
+        aria-label="Scroll horizontally to explore all four pillars"
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+            event.preventDefault();
+            move(event.key === "ArrowRight" ? 1 : -1);
+          }
+        }}
+        className="grid auto-cols-[100%] grid-flow-col items-stretch gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory rounded-[20px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
+      >
+        {[0, 2].map((startIndex) => (
+          <div
+            key={startIndex}
+            role="group"
+            aria-label={`Pillars ${startIndex + 1} and ${startIndex + 2}`}
+            className="grid min-w-0 snap-start snap-always grid-cols-1 gap-6 md:grid-cols-2"
+          >
+            {pillars.slice(startIndex, startIndex + 2).map((pillar, offset) => (
+              <FeatureCard
+                key={pillar.icon}
+                pillar={pillar}
+                index={startIndex + offset}
+                contactHref={contactHref}
+                hasEntered={hasEntered}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-7 flex justify-center">
+        <div
+          className="inline-flex items-center gap-4 rounded-full border p-2 shadow-[0_5px_24px_rgba(0,0,0,0.08)]"
+          style={{ borderColor: "var(--pillar-border)" }}
+        >
+          {([-1, 1] as const).map((direction) => (
+            <button
+              key={direction}
+              type="button"
+              aria-label={direction === -1 ? "Previous pillars" : "Next pillars"}
+              aria-controls={trackId}
+              disabled={direction === -1 ? position.start : position.end}
+              onClick={() => move(direction)}
+              className="relative flex size-10 items-center justify-center rounded-full transition-opacity hover:opacity-70 disabled:cursor-default disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+            >
+              <span aria-hidden="true" className="absolute inset-0 rounded-full bg-current opacity-[0.04]" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d={direction === -1 ? "m14 5-7 7 7 7" : "m10 5 7 7-7 7"} />
+              </svg>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -136,99 +214,161 @@ export default function ItSolutions({
 }: {
   contactHref?: string;
 }) {
+  const introRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+
+  const introTextVariants = {
+    hidden: { opacity: reduceMotion ? 1 : 0, y: reduceMotion ? 0 : 28 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: reduceMotion ? 0 : 0.85,
+        ease: [0.22, 1, 0.36, 1] as const,
+      },
+    },
+  };
+
+
+  // Finish shrinking while the heading is moving out through the top.
+  const { scrollYProgress: introProgress } = useScroll({
+    target: introRef,
+    offset: ["start start", "center start"],
+  });
+
+  const introScale = useTransform(
+    introProgress,
+    [0, 1],
+    [1.12, 0.4],
+  );
+
+  // The services are already present as they enter the viewport.
+  // Only their colors change with this scroll progress.
+  const { scrollYProgress: colorProgress } = useScroll({
+    target: servicesRef,
+    offset: ["start 85%", "start 30%"],
+  });
+
+  const backgroundColor = useTransform(
+    colorProgress,
+    [0, 1],
+    ["#000000", "#ffffff"],
+  );
+
+  const foregroundColor = useTransform(
+    colorProgress,
+    [0, 1],
+    ["#ffffff", "#111111"],
+  );
+
+  const pillarBorder = useTransform(
+    colorProgress,
+    [0, 1],
+    ["rgba(255,255,255,0.15)", "rgba(0,0,0,0.12)"],
+  );
+
+  const pillarSurface = useTransform(
+    colorProgress,
+    [0, 1],
+    ["rgba(255,255,255,0.035)", "rgba(0,0,0,0.02)"],
+  );
+
+  const themeStyle = {
+    backgroundColor: reduceMotion ? "#ffffff" : backgroundColor,
+    color: reduceMotion ? "#111111" : foregroundColor,
+    "--pillar-border": reduceMotion
+      ? "rgba(0,0,0,0.12)"
+      : pillarBorder,
+    "--pillar-surface": reduceMotion
+      ? "rgba(0,0,0,0.02)"
+      : pillarSurface,
+  };
+
   return (
-    <section
-      aria-labelledby="premier-service-heading"
-      className="relative isolate w-full overflow-hidden bg-[#011638] px-6 py-20 text-white md:px-[72px] md:py-28 lg:py-32"
+    <motion.div
+      className="relative isolate w-full"
+      style={themeStyle}
+      id="about"
     >
-      {/* Subtle depth behind the section introduction */}
+      {/* Intro: both lines zoom together, following scroll position. */}
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.055) 0%, transparent 60%)",
-        }}
-      />
-
-      <div className="mx-auto w-full max-w-[1280px]">
-        {/* Introduction */}
+        ref={introRef}
+        className="relative flex min-h-[85svh] items-center justify-center overflow-hidden px-8 py-28 md:min-h-[90svh] md:px-[90px] md:py-36"
+        style={
+          reduceMotion
+            ? {
+                backgroundColor: "#000000",
+                color: "#ffffff",
+              }
+            : undefined
+        }
+      >
         <motion.div
-          className="mx-auto mb-14 flex max-w-[850px] flex-col items-center text-center md:mb-20"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.9, ease }}
+        className="mx-auto w-full max-w-[1600px] text-center"
+          style={{
+            scale: reduceMotion ? 1 : introScale,
+            transformOrigin: "50% 50%",
+          }}
         >
-          <p className="mb-6 text-xs font-medium uppercase tracking-[0.24em] text-white/60">
-            The Four Pillars of Premier Service
+      <h2 className="text-[clamp(2.75rem,5.6vw,6.5rem)] font-medium leading-[1.08] tracking-[-0.045em]">
+  <span className="block xl:whitespace-nowrap">
+    Premier is the mobility partner for
+  </span>
+  <span className="block">global leaders.</span>
+</h2>
+
+          <p className="mx-auto mt-7 max-w-[780px] text-base leading-7 tracking-[-0.01em] opacity-75 [text-wrap:balance] md:mt-9 md:text-xl md:leading-8">
+            Where the standard is being seen, known, and served with
+            anticipation.
           </p>
-
-          <h2
-            id="premier-service-heading"
-            className="text-4xl font-medium leading-[1.15] tracking-[-0.035em] md:text-5xl lg:text-6xl"
-          >
-            At Premier, luxury is personal.
-          </h2>
-
-          <p className="mt-7 max-w-[720px] text-lg leading-8 text-white/70 md:text-xl md:leading-9">
-            Premier learns who you are, how you move, what you need, and who you
-            trust—then ensures every journey feels designed for your tailored
-            experience.
-          </p>
-        </motion.div>
-
-        {/* Four pillars */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {pillars.map((pillar, index) => (
-            <FeatureCard key={pillar.icon} pillar={pillar} index={index} />
-          ))}
-        </div>
-
-        {/* Closing invitation */}
-        <motion.div
-          className="mt-16 border-t border-white/15 pt-12 md:mt-20 md:pt-14"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.85, ease }}
-        >
-          <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center lg:gap-12">
-            <div className="max-w-[620px]">
-              <p className="text-2xl font-medium leading-snug tracking-[-0.02em] md:text-3xl">
-                Every journey begins with a conversation.
-              </p>
-
-              <p className="mt-4 text-base leading-7 text-white/70 md:text-lg">
-                Tell us who you&apos;re moving and where—we&apos;ll handle the
-                details.
-              </p>
-            </div>
-
-            <a
-              href={contactHref}
-              className="group inline-flex min-h-14 w-full items-center justify-center gap-5 rounded-sm border border-white/40 px-6 py-4 text-sm font-medium leading-6 tracking-wide text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#011638] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:w-auto lg:shrink-0"
-            >
-              <span>Speak with our Client Experience Team</span>
-
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="shrink-0 transition-transform duration-300 group-hover:translate-x-1"
-              >
-                <path d="M4 12h16M14 6l6 6-6 6" />
-              </svg>
-            </a>
-          </div>
         </motion.div>
       </div>
-    </section>
+
+      {/* Always visible; inherits the animated background and text colors. */}
+      <section
+        ref={servicesRef}
+        aria-labelledby="premier-service-heading"
+        className="relative px-6 pb-20 pt-16 md:px-[72px] md:pb-28 md:pt-20 lg:pb-32"
+      >
+        <div className="mx-auto w-full max-w-[1280px]" id="services">
+          <motion.div
+            className="mx-auto mb-14 flex max-w-[850px] flex-col items-center text-center md:mb-20"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, amount: 0.25 }}
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: reduceMotion ? 0 : 0.16,
+                },
+              },
+            }}
+          >
+            <motion.p variants={introTextVariants} className="mb-6 text-xs font-medium uppercase tracking-[0.24em] opacity-60">
+              The Four Pillars of Premier Service
+            </motion.p>
+
+            <motion.h2
+              variants={introTextVariants}
+              id="premier-service-heading"
+              className="text-4xl font-medium leading-[1.15] tracking-[-0.035em] md:text-5xl lg:text-6xl"
+            >
+              At Premier, luxury is personal.
+            </motion.h2>
+
+            <motion.p variants={introTextVariants} className="mt-7 max-w-[720px] text-lg leading-8 opacity-70 md:text-xl md:leading-9">
+              Premier learns who you are, how you move, what you need,
+              and who you trust—then ensures every journey feels
+              designed for your tailored experience.
+            </motion.p>
+          </motion.div>
+
+          <PillarsCarousel contactHref={contactHref}  />
+
+        </div>
+      </section>
+    </motion.div>
   );
 }

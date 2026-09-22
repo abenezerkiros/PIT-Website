@@ -11,19 +11,28 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import AboutUsCopy from "@/components/About copy";
 import Booking from "@/components/Booking";
+import GlobalStandard from "@/components/GlobalStandard";
+import ConversationSection from "@/components/ConversationSection";
+import PartnersSection from "@/components/PartnersSection";
 export default function Home() {
   return (
     <main>
       <Navbar/>
       <HeroSection />
-      <OurServices/>
-      <AboutUsCopy/>
+
+  
       <ItSolutions/>
-      <Fleet/>
-      <AboutUs/>
-      <AirportCta/>
-      <Testimonials/>
-      <Faqs/>
+      <GlobalStandard imageSrc="/globe-image.png" />
+      <ConversationSection
+  imageSrc="/card-image.png"
+  contactHref="/contact"
+/>
+      <Fleet />
+      <PartnersSection/>
+
+  
+
+
       <Booking/>
       <GetAQuote/>
       <Footer/>

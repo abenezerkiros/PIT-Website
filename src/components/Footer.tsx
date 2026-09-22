@@ -83,45 +83,7 @@ export default function Footer() {
         </motion.div>
 
         {/* Footer columns */}
-        <div className="grid w-full grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-6 lg:gap-y-10">
-          {columns.map((column, index) => (
-            <motion.div
-              key={column.title}
-              className="flex min-w-0 flex-col items-start gap-5"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{
-                duration: 0.7,
-                delay: index * 0.06,
-                ease,
-              }}
-            >
-              <p className="text-lg font-medium text-white sm:text-xl">
-                {column.title}
-              </p>
-
-              <div className="flex flex-col items-start gap-3.5 text-sm text-[#9c9c9c] sm:gap-4 sm:text-base">
-                {column.links.map((link) => (
-                  <motion.a
-                    key={link}
-                    href="#"
-                    className="relative transition-colors duration-300 hover:text-white"
-                    whileHover={{
-                      x: 3,
-                      transition: {
-                        duration: 0.25,
-                        ease,
-                      },
-                    }}
-                  >
-                    {link}
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+   
       </div>
 
       {/* Copyright */}

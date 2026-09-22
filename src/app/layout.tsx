@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 
-// Manrope is used for body text in the design.
-// The design's heading font ("Neutral Face") isn't a standard web font —
-// add it via a local @font-face or swap in a Google Font that matches, then
-// wire it up in tailwind.config.ts under fontFamily.heading.
-const manrope = Manrope({
-  subsets: ["latin"],
+const geist = localFont({
+  src: "../../public/fonts/Geist.ttf",
   variable: "--font-body",
+  display: "swap",
+  
+});
+
+const fragmentGlare = localFont({
+  src: "../../public/fonts/pp-fragment-glare.ttf",
+  variable: "--font-heading",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +29,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} font-body`}><SmoothScroll>{children}</SmoothScroll></body>
+      <body className={`${geist.variable} ${fragmentGlare.variable}`}>
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }

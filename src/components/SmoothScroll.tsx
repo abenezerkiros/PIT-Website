@@ -12,10 +12,12 @@ export default function SmoothScroll({
     <ReactLenis
       root
       options={{
-        lerp: 0.1, // lower = smoother/heavier, higher = snappier. 0.1 feels premium without being sluggish.
-        duration: 1.4,
+        lerp: 0.1,
         smoothWheel: true,
-        syncTouch: false, // keep native touch scroll on mobile — smoothing touch usually feels laggy, not luxurious
+        syncTouch: false,
+        anchors: {
+          offset: -96,
+        },
       }}
     >
       {children}

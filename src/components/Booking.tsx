@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState,useEffect } from "react";
 import type { FormEvent } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -24,6 +24,12 @@ const steps = [
       "Every journey begins with a person. Tell us who we’ll be looking after.",
   },
   {
+    label: "The journey",
+    title: "Now, tell us the logistics.",
+    description:
+      "Where should the journey begin, and where are we taking you?",
+  },
+  {
     label: "The occasion",
     title: "What is the purpose of this trip?",
     description:
@@ -40,12 +46,6 @@ const steps = [
     title: "What are their preferences?",
     description:
       "The smallest details can make a journey feel entirely their own.",
-  },
-  {
-    label: "The journey",
-    title: "Now, tell us the logistics.",
-    description:
-      "Where should the journey begin, and where are we taking you?",
   },
   {
     label: "Your details",
@@ -115,6 +115,20 @@ export default function BookingSection({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const submissionLock = useRef(false);
   const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  // Observe the stationary section, not the moving panels. "some" also
+  // keeps the long review form visible while scrolling through its fields.
+  const sectionInView = useInView(sectionRef, {
+    once: false,
+    amount: "some",
+    margin: "0px 0px -80px 0px",
+  });
+  const sectionVisible = reduceMotion || sectionInView;
+  const entranceTransition = {
+    duration: reduceMotion ? 0 : sectionInView ? 1.1 : 0.45,
+    ease,
+  };
+
 
   const current = steps[step];
   const lastStep = step === steps.length - 1;
@@ -171,7 +185,24 @@ export default function BookingSection({
       setSubmitting(false);
     }
   }
+  const successRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!submitted) return;
+  
+    const frame = requestAnimationFrame(() => {
+      const confirmation = successRef.current;
+      if (!confirmation) return;
+  
+      confirmation.focus({ preventScroll: true });
+      confirmation.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "center",
+      });
+    });
+  
+    return () => cancelAnimationFrame(frame);
+  }, [submitted, reduceMotion]);
   const reviewGroups = [
     {
       title: "The traveler",
@@ -179,29 +210,29 @@ export default function BookingSection({
       entries: [["Name", values.traveler]],
     },
     {
-      title: "The occasion",
-      step: 1,
-      entries: [["Purpose", values.purpose]],
-    },
-    {
-      title: "Your expectations",
-      step: 2,
-      entries: [["A perfect journey", values.success || "Not specified"]],
-    },
-    {
-      title: "Personal preferences",
-      step: 3,
-      entries: [["Preferences", values.preferences || "Not specified"]],
-    },
-    {
       title: "The journey",
-      step: 4,
+      step: 1,
       entries: [
         ["Pick-up", values.pickup],
         ["Drop-off", values.dropoff],
         ["Date", values.date],
         ["Time", `${values.time} · Pick-up location’s local time`],
       ],
+    },
+    {
+      title: "The occasion",
+      step: 2,
+      entries: [["Purpose", values.purpose]],
+    },
+    {
+      title: "Your expectations",
+      step: 3,
+      entries: [["A perfect journey", values.success || "Not specified"]],
+    },
+    {
+      title: "Personal preferences",
+      step: 4,
+      entries: [["Preferences", values.preferences || "Not specified"]],
     },
     {
       title: "Your contact details",
@@ -216,9 +247,10 @@ export default function BookingSection({
 
   return (
     <section
-      id="booking"
+      ref={sectionRef}
+      id="contact"
       aria-labelledby="booking-section-heading"
-      className="relative isolate overflow-hidden bg-[#011638] px-6 py-20 text-white md:px-[72px] md:py-28"
+      className="relative isolate overflow-hidden bg-black px-6 py-20 text-white md:px-[72px] md:py-28"
     >
       <div
         aria-hidden="true"
@@ -231,7 +263,12 @@ export default function BookingSection({
 
       <div className="mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
         {/* Section introduction */}
-        <div className="lg:pt-10">
+        <motion.div
+          className="lg:pt-10"
+          initial={false}
+          animate={{ opacity: sectionVisible ? 1 : 0, x: sectionVisible ? 0 : -90 }}
+          transition={entranceTransition}
+        >
           <p className="mb-6 text-xs font-medium uppercase tracking-[0.24em] text-white/55">
             Your Journey, Personally Arranged
           </p>
@@ -257,18 +294,25 @@ export default function BookingSection({
             Your request begins a conversation with our Client Experience
             Team. Journey details and availability will be confirmed personally.
           </p>
-        </div>
+        </motion.div>
 
         {/* Form panel */}
-        <div className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.025] p-6 sm:p-9 md:p-10">
+        <motion.div
+          className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.025] p-6 sm:p-9 md:p-10"
+          initial={false}
+          animate={{ opacity: sectionVisible ? 1 : 0, x: sectionVisible ? 0 : 90 }}
+          transition={entranceTransition}
+        >
           {submitted ? (
-            <motion.div
-              role="status"
-              className="flex min-h-[460px] flex-col items-start justify-center"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.7, ease }}
-            >
+          <motion.div
+          ref={successRef}
+          tabIndex={-1}
+          role="status"
+          className="flex min-h-[460px] flex-col items-start justify-center outline-none"
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.7, ease }}
+        >
               <div className="mb-8 flex size-16 items-center justify-center rounded-full border border-[#c9a227]/50 text-[#dfbf64]">
                 <svg
                   viewBox="0 0 24 24"
@@ -391,79 +435,6 @@ export default function BookingSection({
                       )}
 
                       {step === 1 && (
-                        <div>
-                          <label htmlFor="purpose" className={labelClass}>
-                            Trip purpose
-                          </label>
-                          <select
-                            id="purpose"
-                            name="purpose"
-                            required
-                            value={values.purpose}
-                            onChange={(e) => update("purpose", e.target.value)}
-                            className={`${inputClass} [color-scheme:dark]`}
-                          >
-                            <option value="" disabled className="bg-[#011638]">
-                              Select the purpose of your trip
-                            </option>
-                            {purposes.map((purpose) => (
-                              <option
-                                key={purpose}
-                                value={purpose}
-                                className="bg-[#011638]"
-                              >
-                                {purpose}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      {step === 2 && (
-                        <div>
-                          <label htmlFor="success" className={labelClass}>
-                            Describe what success looks like for this ride
-                            <span className="ml-2 text-white/40">
-                              (optional)
-                            </span>
-                          </label>
-                          <textarea
-                            id="success"
-                            name="success"
-                            rows={5}
-                            maxLength={3000}
-                            value={values.success}
-                            onChange={(e) => update("success", e.target.value)}
-                            placeholder="What would make this journey feel just right?"
-                            className={`${inputClass} resize-y`}
-                          />
-                        </div>
-                      )}
-
-                      {step === 3 && (
-                        <div>
-                          <label htmlFor="preferences" className={labelClass}>
-                            Personal preferences
-                            <span className="ml-2 text-white/40">
-                              (optional)
-                            </span>
-                          </label>
-                          <textarea
-                            id="preferences"
-                            name="preferences"
-                            rows={5}
-                            maxLength={3000}
-                            value={values.preferences}
-                            onChange={(e) =>
-                              update("preferences", e.target.value)
-                            }
-                            placeholder="Water, reading material, temperature, conversation style—anything we should know."
-                            className={`${inputClass} resize-y`}
-                          />
-                        </div>
-                      )}
-
-                      {step === 4 && (
                         <>
                           <div>
                             <label htmlFor="pickup" className={labelClass}>
@@ -537,6 +508,79 @@ export default function BookingSection({
                             Please use the local time at your pick-up location.
                           </p>
                         </>
+                      )}
+
+                      {step === 2 && (
+                        <div>
+                          <label htmlFor="purpose" className={labelClass}>
+                            Trip purpose
+                          </label>
+                          <select
+                            id="purpose"
+                            name="purpose"
+                            required
+                            value={values.purpose}
+                            onChange={(e) => update("purpose", e.target.value)}
+                            className={`${inputClass} [color-scheme:dark]`}
+                          >
+                            <option value="" disabled className="bg-black">
+                              Select the purpose of your trip
+                            </option>
+                            {purposes.map((purpose) => (
+                              <option
+                                key={purpose}
+                                value={purpose}
+                                className="bg-black"
+                              >
+                                {purpose}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      {step === 3 && (
+                        <div>
+                          <label htmlFor="success" className={labelClass}>
+                            Describe what success looks like for this ride
+                            <span className="ml-2 text-white/40">
+                              (optional)
+                            </span>
+                          </label>
+                          <textarea
+                            id="success"
+                            name="success"
+                            rows={5}
+                            maxLength={3000}
+                            value={values.success}
+                            onChange={(e) => update("success", e.target.value)}
+                            placeholder="What would make this journey feel just right?"
+                            className={`${inputClass} resize-y`}
+                          />
+                        </div>
+                      )}
+
+                      {step === 4 && (
+                        <div>
+                          <label htmlFor="preferences" className={labelClass}>
+                            Personal preferences
+                            <span className="ml-2 text-white/40">
+                              (optional)
+                            </span>
+                          </label>
+                          <textarea
+                            id="preferences"
+                            name="preferences"
+                            rows={5}
+                            maxLength={3000}
+                            value={values.preferences}
+                            onChange={(e) =>
+                              update("preferences", e.target.value)
+                            }
+                            placeholder="Water, reading material, temperature, conversation style—anything we should know."
+                            className={`${inputClass} resize-y`}
+                          />
+                        </div>
                       )}
 
                       {step === 5 && (
@@ -662,7 +706,7 @@ export default function BookingSection({
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex min-h-12 items-center justify-center gap-4 rounded-sm border border-[#c9a227]/70 px-5 py-3 text-sm font-medium text-[#dfbf64] transition-colors hover:bg-[#c9a227] hover:text-[#011638] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227] disabled:cursor-wait disabled:opacity-50"
+                    className="inline-flex min-h-12 items-center justify-center gap-4 rounded-sm border border-[#c9a227]/70 px-5 py-3 text-sm font-medium text-[#dfbf64] transition-colors hover:bg-[#c9a227] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227] disabled:cursor-wait disabled:opacity-50"
                   >
                     {submitting
                       ? "Sending your request…"
@@ -675,7 +719,7 @@ export default function BookingSection({
               </form>
             </>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

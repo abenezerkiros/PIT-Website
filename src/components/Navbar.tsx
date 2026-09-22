@@ -8,10 +8,11 @@ import Image from "next/image";
 
 const logoImage = "/logo.png";
 const navLinks = [
-  { label: "Airport", href: "#airport" },
+  { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Fleet", href: "#fleet" },
-  { label: "Shuttle Service", href: "#shuttle" },
+  { label: "Partners", href: "#partners" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const BOOKING_URL = "https://book.mylimobiz.com/v4/pittransportation";
@@ -111,7 +112,7 @@ export default function Navbar() {
             <a
               key={link.label}
               href={link.href}
-              className="p-2.5 text-lg uppercase text-white/80 transition-colors duration-300 hover:text-white"
+              className="p-2.5 text-lg uppercase text-[#957E5E]  transition-colors duration-300 hover:text-white"
             >
               {link.label}
             </a>
@@ -119,14 +120,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop booking */}
-        <a
-  href={BOOKING_URL}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="hidden shrink-0 items-center justify-center rounded-lg border border-white px-6 py-3 text-lg font-semibold text-white transition-colors duration-300 hover:bg-white hover:text-black md:flex"
->
-  Online Booking
-</a>
+
 
         {/* Mobile menu toggle */}
         <button
@@ -176,15 +170,7 @@ export default function Navbar() {
             </a>
           ))}
 
-          <a
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="mt-3 flex w-full items-center justify-center rounded-lg border border-white px-6 py-3 text-lg font-semibold text-white"
-          >
-            Online Booking
-          </a>
+       
         </div>
       </div>
     </header>
