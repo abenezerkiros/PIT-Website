@@ -570,8 +570,7 @@ export default function Fleet({
       },
     }}
   >
-    Every vehicle is chosen for a reason and prepared to the same
-    standard. Explore what&apos;s available for your journey.
+ Chosen for the journey. Prepared before you arrive.
   </motion.p>
 </motion.div>
 
@@ -633,17 +632,16 @@ export default function Fleet({
         {/* Conversation invitation */}
         <div className="mt-14 flex flex-col items-start justify-between gap-7 border-t border-white/15 pt-10 md:mt-20 lg:flex-row lg:items-center lg:gap-12">
           <p className="max-w-[700px] text-xl leading-relaxed tracking-[-0.015em] text-white/80 md:text-2xl">
-            Let our client experience team help you decide which vehicle is
-            right for your journey!
+          Not sure which vehicle is right for your journey? A Client Experience Lead will help you choose. 
           </p>
 
           <a
-            href={"#contact"}
-            className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-6 rounded-sm border border-[#c9a227]/60 px-7 py-4 text-sm font-medium tracking-wide text-[#dfbf64] transition-colors duration-300 hover:bg-[#c9a227] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
-          >
-            Start a Conversation
-            <Arrow className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none" />
-          </a>
+  href="tel:+18884129150"
+  className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-6 rounded-sm border border-[#c9a227]/60 px-7 py-4 text-sm font-medium tracking-wide text-[#dfbf64] transition-colors duration-300 hover:bg-[#c9a227] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
+>
+  Ask us which vehicle is right +1-888-412-9150
+  <Arrow className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none" />
+</a>
         </div>
       </div>
     </section>

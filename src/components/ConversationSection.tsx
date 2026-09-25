@@ -153,14 +153,11 @@ export default function ConversationSection({
       id={boxHeadingId}
       className="max-w-[1000px] text-[clamp(2rem,3.4vw,3.5rem)] font-medium leading-[1.12] tracking-[-0.035em] [text-wrap:balance]"
     >
-      A seamless journey begins with a conversation.
+      Washington, D.C. Our home. Where it all began.
     </h3>
 
     <p className="mt-6 max-w-[1100px] text-base leading-7 text-white/90 md:text-xl md:leading-8">
-      Our Client Experience Team is trained to give immaculate care and
-      attention to every detail. They listen, they anticipate, and they
-      arrange the chauffeur and vehicle service that makes your journey
-      unforgettable.
+    One Suburban. One founder. A city he learned street by street; first on a delivery bike, then opening doors at one of Washington's most storied hotels. 
     </p>
 
     <a
@@ -168,23 +165,11 @@ export default function ConversationSection({
       className="mt-8 inline-flex min-h-14 max-w-full items-center justify-between gap-5 border border-black bg-[#957E5E] px-6 py-4 text-left text-sm font-medium leading-6 text-black hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:text-base"
     >
       <span>
-        Speak with our Client Experience Team for immediate assistance.
+      Washington taught us to serve. Everything we promise elsewhere, we proved here first.
+
       </span>
 
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="shrink-0"
-      >
-        <path d="M4 12h16M14 6l6 6-6 6" />
-      </svg>
+    
     </a>
   </motion.div>
 </div>

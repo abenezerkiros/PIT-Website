@@ -102,10 +102,17 @@ export default function GlobalStandard({
             </svg>
 
             <p className="max-w-[660px] text-xl leading-[1.7] text-white/90 md:text-2xl">
-              From your city to the other side of the world the same
-              duty of care follows you. The same discretion. The same
-              attention. Wherever the journey may take you.
+            From your city to the other side of the world. The same Client Experience Lead. The same briefing before you arrive. The same chauffeur assignment. The same fleet.
+
             </p>
+            <p
+  className="mt-6 max-w-[660px] text-2xl font-normal leading-snug tracking-[-0.02em] text-[#c9a227] md:text-3xl"
+  style={{
+    fontFamily: "var(--font-heading), Georgia, serif",
+  }}
+>
+  Wherever the journey takes you.
+</p>
           </motion.div>
         </div>
       </div>

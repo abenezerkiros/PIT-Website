@@ -12,31 +12,31 @@ import {
 
 const pillars = [
   {
-    icon: "communications",
-    title: "A Communications Team Always at Your Service",
+    icon: "24/hour Communications",
+    title: "Our Client Experience Team, Always At Your Service",
     description:
-      "Whatever the hour, wherever you are, a Client Experience Lead is available—listening, understanding, and making sure nothing is left to chance.",
+      "Whatever the hour, wherever you are, a Client Experience Lead is available to listen and document every detail with meticulous care. That record becomes the brief for your next journey, so you never repeat yourself.",
       src:"/conversation.jpg"
   },
   {
-    icon: "journey",
+    icon: "Curated Journeys",
     title: "Your Journey, Curated with Intelligence",
     description:
-      "Before your journey begins, your preferences become your chauffeur’s briefing. They arrive knowing more than the route. They arrive knowing you.",
+      "Before you arrive, your chauffeur is briefed on your preferences—the water you prefer, the temperature you set, the silence you welcome. You step in, and everything is just right.",
       src:"/Curated-trip.png"
   },
   {
-    icon: "chauffeur",
-    title: "White Glove Chauffeur Service",
+    icon: "Black Glove Chauffeur Service. ",
+    title: "Your Chauffeur, assigned with Intention",
     description:
-      "Every Premier chauffeur is rigorously trained. The difference is the match—we choose the person whose character fits your journey, not whoever is closest.",
+      "We assign the chauffeur whose character fits your principal and whose strengths fit the assignment. Fully licensed, background-checked, and insured. You are never handed to a stranger.",
             src:"/white-glove.png"
   },
   {
-    icon: "vehicle",
-    title: "Vehicles That Ensure You Arrive Like No Other",
+    icon: "The Industry’s Latest Fleet.",
+    title: "Vehicles that ensure you arrive like no other",
     description:
-      "A fleet of the latest luxury vehicles, European and American, increasingly electric—selected and prepared for each journey.",
+      "From one executive to a full delegation. Sedans, SUVs, Sprinters, coaches—European and American, every class in between. Whatever the journey calls for, we have the vehicle.",
             src:"/Fleet.png"
   },
 ] as const;
@@ -313,14 +313,14 @@ export default function ItSolutions({
         >
       <h2 className="text-[clamp(2.75rem,5.6vw,6.5rem)] font-medium leading-[1.08] tracking-[-0.045em]">
   <span className="block xl:whitespace-nowrap">
-    Premier is the mobility partner for
+  When the stakes are highest, 
   </span>
-  <span className="block">global leaders.</span>
+  <span className="block">only premier can be trusted.</span>
 </h2>
 
           <p className="mx-auto mt-7 max-w-[780px] text-base leading-7 tracking-[-0.01em] opacity-75 [text-wrap:balance] md:mt-9 md:text-xl md:leading-8">
-            Where the standard is being seen, known, and served with
-            anticipation.
+          "The chosen mobility partner for institutions that cannot afford mistakes."
+
           </p>
         </motion.div>
       </div>
@@ -355,13 +355,12 @@ export default function ItSolutions({
               id="premier-service-heading"
               className="text-4xl font-medium leading-[1.15] tracking-[-0.035em] md:text-5xl lg:text-6xl"
             >
-              At Premier, luxury is personal.
+            At Premier, personal is the standard.
             </motion.h2>
 
             <motion.p variants={introTextVariants} className="mt-7 max-w-[720px] text-lg leading-8 opacity-70 md:text-xl md:leading-9">
-              Premier learns who you are, how you move, what you need,
-              and who you trust—then ensures every journey feels
-              designed for your tailored experience.
+            Premier learns who you are, how you move, what you need, and who you trust, tailoring every journey with exceptional precision and exacting detail.
+
             </motion.p>
           </motion.div>
 

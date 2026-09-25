@@ -75,8 +75,7 @@ export default function HeroSection() {
             delay: !reduceMotion && inView ? 0.25 : 0,
           }}
         >
-          World class chauffeured transportation for the world&apos;s
-          most important journeys.
+          World class chauffeured transportation for the world&apos;s most important journeys.
         </motion.h1>
 
         <motion.div
@@ -123,7 +122,7 @@ export default function HeroSection() {
         }}
       >
         <p className="text-center text-base tracking-wide text-white">
-          Enter the Premier Standard.
+        Experience the Premier Standard
         </p>
 
         <motion.div

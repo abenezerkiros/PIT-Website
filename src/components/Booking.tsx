@@ -286,14 +286,19 @@ export default function BookingSection({
           />
 
           <p className="max-w-[400px] text-lg leading-8 text-white/65">
-            Tell us who you&apos;re moving and what matters to them. We&apos;ll
-            take care of the details.
+          Tell us who you're moving and what matters to them, a Client Experience Lead will take it from there.
           </p>
 
           <p className="mt-7 max-w-[380px] text-sm leading-7 text-white/45">
-            Your request begins a conversation with our Client Experience
-            Team. Journey details and availability will be confirmed personally.
-          </p>
+  Prefer to speak with someone? Call{" "}
+  <a
+    href="tel:+18884129150"
+    className="text-[#dfbf64] underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
+  >
+    +1-888-412-9150
+  </a>
+  . Available 24 hours a day.
+</p>
         </motion.div>
 
         {/* Form panel */}

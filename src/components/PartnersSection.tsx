@@ -79,8 +79,7 @@ export default function PartnersSection() {
             },
           }}
         >
-          Explore the institutions that have placed their trust in
-          Premier.
+         The institutions that trust us with the world's most important journeys.
         </motion.h2>
       </motion.div>
 
