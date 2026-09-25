@@ -21,6 +21,9 @@ type Vehicle = {
   bestFor: string;
   category: Exclude<Category, "All">;
   image: string;
+  passengers: string;
+  suitcases: number;
+  carryOns?: number;
 };
 
 // Update these paths to match your vehicle images in /public.
@@ -34,6 +37,9 @@ const vehicles: Vehicle[] = [
     bestFor: "High-security transfers, CEO travel, diplomatic missions.",
     category: "Individual Travel",
     image: "/mercedes-s-class.png",
+    passengers: "1–2",
+    suitcases: 2,
+    carryOns: 2,
   },
   {
     id: "escalade",
@@ -44,6 +50,9 @@ const vehicles: Vehicle[] = [
     bestFor: "Executive mobility, entertainment, family travel.",
     category: "Individual Travel",
     image: "/cadillac-escalade.png",
+    passengers: "1–5",
+    suitcases: 5,
+    carryOns: 3,
   },
   {
     id: "suburban",
@@ -54,6 +63,9 @@ const vehicles: Vehicle[] = [
     bestFor: "Security details, support vehicles, long-distance transfers.",
     category: "Individual Travel",
     image: "/chevy-suburban.png",
+    passengers: "1–5",
+    suitcases: 5,
+    carryOns: 3,
   },
   {
     id: "e-class",
@@ -64,6 +76,9 @@ const vehicles: Vehicle[] = [
     bestFor: "Business travel, point-to-point transfers, concierge service.",
     category: "Individual Travel",
     image: "/mercedes-e-class.png",
+    passengers: "1–2",
+    suitcases: 2,
+    carryOns: 2,
   },
   {
     id: "sprinter",
@@ -74,6 +89,20 @@ const vehicles: Vehicle[] = [
     bestFor: "Corporate roadshows, delegations, production teams.",
     category: "Group Travel",
     image: "/sprinter-van.png",
+    passengers: "13",
+    suitcases: 10,
+  },
+  {
+    id: "mini-bus-24",
+    name: "24-Passenger Mini Bus",
+    tagline: "The Coordinated Movement",
+    description:
+      "When an entire group must arrive together, on time, and in order.",
+    bestFor: "Corporate events, conferences, group airport transfers.",
+    category: "Group Travel",
+    image: "/mini-bus.png",
+    passengers: "24",
+    suitcases: 28,
   },
   {
     id: "mini-bus",
@@ -84,6 +113,8 @@ const vehicles: Vehicle[] = [
     bestFor: "Corporate events, conferences, group airport transfers.",
     category: "Group Travel",
     image: "/mini-bus.png",
+    passengers: "28",
+    suitcases: 30,
   },
   {
     id: "bus",
@@ -94,6 +125,8 @@ const vehicles: Vehicle[] = [
     bestFor: "Corporate events, conferences, wedding parties.",
     category: "Group Travel",
     image: "/mini-bus.png",
+    passengers: "40",
+    suitcases: 45,
   },
   {
     id: "coach",
@@ -104,6 +137,8 @@ const vehicles: Vehicle[] = [
     bestFor: "Full delegations, conference shuttles, multi-day programs.",
     category: "Group Travel",
     image: "/charter-bus.png",
+    passengers: "55",
+    suitcases: 60,
   },
 ];
 
@@ -130,6 +165,68 @@ function Arrow({ className = "" }: { className?: string }) {
   );
 }
 
+function CapacityIcon({ kind }: { kind: "passengers" | "suitcases" | "carryOns" }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      {kind === "passengers" ? (
+        <>
+          <circle cx="9" cy="7" r="3" />
+          <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 13a5 5 0 0 1 3 5v3" />
+        </>
+      ) : kind === "suitcases" ? (
+        <>
+          <rect x="5" y="7" width="14" height="14" rx="2" />
+          <path d="M9 7V3h6v4M9 11v6M15 11v6M8 21v1M16 21v1" />
+        </>
+      ) : (
+        <>
+          <rect x="6" y="10" width="12" height="11" rx="2" />
+          <path d="M10 10V3h4v7M6 14h12M9 21v1M15 21v1" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function VehicleCapacity({ vehicle }: { vehicle: Vehicle }) {
+  const capacities = [
+    { kind: "passengers" as const, value: vehicle.passengers, label: "Passengers" },
+    { kind: "suitcases" as const, value: vehicle.suitcases, label: "Suitcases" },
+    ...(vehicle.carryOns === undefined
+      ? []
+      : [{ kind: "carryOns" as const, value: vehicle.carryOns, label: "Carry-ons" }]),
+  ];
+
+  return (
+    <ul aria-label="Vehicle capacity" className="mt-3 flex flex-wrap items-center gap-1.5">
+      {capacities.map(({ kind, value, label }) => (
+        <li
+          key={kind}
+          aria-label={`${value} ${label.toLowerCase()}`}
+          title={`${value} ${label.toLowerCase()}`}
+          className="inline-flex items-center rounded-sm bg-[#b7a071] px-2 py-1 text-white"
+        >
+          <span className="flex items-center justify-center gap-1.5">
+            <CapacityIcon kind={kind} />
+            <span className="text-xs font-normal leading-4 tabular-nums">{value}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const [hovered, setHovered] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -152,7 +249,7 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
     >
       {/* Vehicle image */}
       <motion.div
-        className="absolute inset-x-5 bottom-16 top-32 sm:inset-x-10"
+        className="absolute inset-x-5 bottom-16 top-[176px] sm:inset-x-10"
         animate={{
           scale: open && !reduceMotion ? 1.035 : 1,
         }}
@@ -197,13 +294,15 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         >
           {vehicle.name}
         </h3>
+
+        <VehicleCapacity vehicle={vehicle} />
       </div>
 
       {/* Revealed description */}
       <motion.div
         id={detailsId}
         aria-hidden={!open}
-        className="absolute inset-x-0 bottom-[88px] z-20 px-6 sm:px-8"
+        className="absolute inset-x-0 bottom-[88px] top-[196px] z-20 overflow-y-auto px-6 sm:px-8"
         style={{ pointerEvents: open ? "auto" : "none" }}
         initial={false}
         animate={{
