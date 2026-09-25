@@ -16,7 +16,7 @@ html {
 }
 
 body {
-  font-family: "Times New Roman", Times, serif;
+  font-family: var(--font-body), Arial, sans-serif;
 }
 
 h1,
