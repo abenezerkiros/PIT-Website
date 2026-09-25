@@ -108,11 +108,26 @@ function FeatureCard({
 
 function PillarsCarousel({ contactHref }: { contactHref: string }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  // The stationary carousel viewport triggers once, independently of its slides.
+  // The stationary viewport controls entrance animations independently of horizontal scrolling.
   const hasEntered = useInView(trackRef, { once: false, amount: 0.18 });
   const trackId = useId();
   const reduceMotion = useReducedMotion();
   const [position, setPosition] = useState({ start: true, end: false });
+  const [cardsPerPage, setCardsPerPage] = useState(2);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const updatePageSize = () => setCardsPerPage(desktop.matches ? 2 : 1);
+
+    updatePageSize();
+    desktop.addEventListener("change", updatePageSize);
+    return () => desktop.removeEventListener("change", updatePageSize);
+  }, []);
+
+  const pageStarts = Array.from(
+    { length: Math.ceil(pillars.length / cardsPerPage) },
+    (_, page) => page * cardsPerPage,
+  );
 
   useEffect(() => {
     const track = trackRef.current;
@@ -125,6 +140,8 @@ function PillarsCarousel({ contactHref }: { contactHref: string }) {
       });
     };
 
+    // Start on a complete slide when switching between mobile and desktop.
+    track.scrollLeft = 0;
     update();
     track.addEventListener("scroll", update, { passive: true });
     const observer = new ResizeObserver(update);
@@ -134,7 +151,7 @@ function PillarsCarousel({ contactHref }: { contactHref: string }) {
       track.removeEventListener("scroll", update);
       observer.disconnect();
     };
-  }, []);
+  }, [cardsPerPage]);
 
   const move = (direction: number) => {
     const track = trackRef.current;
@@ -162,14 +179,18 @@ function PillarsCarousel({ contactHref }: { contactHref: string }) {
         }}
         className="grid auto-cols-[100%] grid-flow-col items-stretch gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory rounded-[20px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
       >
-        {[0, 2].map((startIndex) => (
+        {pageStarts.map((startIndex) => (
           <div
             key={startIndex}
             role="group"
-            aria-label={`Pillars ${startIndex + 1} and ${startIndex + 2}`}
+            aria-label={
+              cardsPerPage === 1
+                ? `Pillar ${startIndex + 1}`
+                : `Pillars ${startIndex + 1} and ${startIndex + 2}`
+            }
             className="grid min-w-0 snap-start snap-always grid-cols-1 gap-6 md:grid-cols-2"
           >
-            {pillars.slice(startIndex, startIndex + 2).map((pillar, offset) => (
+            {pillars.slice(startIndex, startIndex + cardsPerPage).map((pillar, offset) => (
               <FeatureCard
                 key={pillar.icon}
                 pillar={pillar}
