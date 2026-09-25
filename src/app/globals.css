@@ -19,7 +19,12 @@ body {
   font-family: var(--font-body), Arial, sans-serif;
 }
 
-h1,
+h1
+{
+  font-family: "Times New Roman", Times, serif;
+
+  text-transform: uppercase;
+}
 h2,
 h3,
 h4,
