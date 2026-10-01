@@ -23,21 +23,21 @@ const pillars = [
     title: "Your Journey, Curated with Intelligence",
     description:
       "Before you arrive, your chauffeur is briefed on your preferences—the water you prefer, the temperature you set, the silence you welcome. You step in, and everything is just right.",
-      src:"/Curated-trip.png"
+      src:"/AboutSection.jpg"
   },
   {
     icon: "Black Glove Chauffeur Service. ",
     title: "Your Chauffeur, assigned with Intention",
     description:
       "We assign the chauffeur whose character fits your principal and whose strengths fit the assignment. Fully licensed, background-checked, and insured. You are never handed to a stranger.",
-            src:"/white-glove.png"
+            src:"/black-glove.jpg"
   },
   {
     icon: "The Industry’s Latest Fleet.",
     title: "Vehicles that ensure you arrive like no other",
     description:
       "From one executive to a full delegation. Sedans, SUVs, Sprinters, coaches—European and American, every class in between. Whatever the journey calls for, we have the vehicle.",
-            src:"/Fleet.png"
+            src:"/footer.jpg"
   },
 ] as const;
 

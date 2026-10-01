@@ -61,19 +61,19 @@ export default function GlobalStandard({
       {/* Animated content */}
       <div className="mx-auto flex min-h-[300px] w-full max-w-[1600px] items-center px-6 py-8 md:min-h-[340px] md:px-[72px] md:py-10">
         <div className="grid w-full items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
-          <motion.h2
-            id="global-standard-heading"
-            className="text-[clamp(3rem,5.5vw,6rem)] font-medium leading-[1.05] tracking-[-0.045em]"
-            initial={false}
-            animate={{
-              x: visible ? 0 : -100,
-              opacity: visible ? 1 : 0,
-            }}
-            transition={transition}
-          >
-            <span className="block">One standard.</span>
-            <span className="block">Everywhere.</span>
-          </motion.h2>
+        <motion.h2
+  id="global-standard-heading"
+  className="whitespace-nowrap text-[clamp(18px,5.5vw,38px)] font-medium leading-[1.05] tracking-[-0.045em] md:whitespace-normal md:text-[clamp(3rem,5.5vw,6rem)]"
+  initial={false}
+  animate={{
+    x: visible ? 0 : -100,
+    opacity: visible ? 1 : 0,
+  }}
+  transition={transition}
+>
+  <span className="inline md:block">One standard.</span>{" "}
+  <span className="inline md:block">Everywhere.</span>
+</motion.h2>
 
           <motion.div
             className="border-t border-white/25 pt-10 lg:border-l lg:border-t-0 lg:py-6 lg:pl-16"

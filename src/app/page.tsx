@@ -1,4 +1,4 @@
-import HeroSection from "@/components/HeroSection";
+import HeroSection from "@/components/HeroSectionTest";
 import OurServices from "@/components/OurServices";
 import ItSolutions from "@/components/ItSolutions";
 import Fleet from "@/components/Fleet";
@@ -24,7 +24,7 @@ export default function Home() {
       <ItSolutions/>
       <GlobalStandard imageSrc="/globe-image.png" />
       <ConversationSection
-  imageSrc="/card-image.png"
+  imageSrc="/capital-hill.jpg"
   contactHref="/contact"
 />
       <Fleet />
@@ -33,7 +33,7 @@ export default function Home() {
   
 
 
-      <Booking/>
+
       <GetAQuote/>
       <Footer/>
     </main>
