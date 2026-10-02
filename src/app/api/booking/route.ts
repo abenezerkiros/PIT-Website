@@ -145,7 +145,7 @@ export async function POST(request: Request) {
         from: "Premier Reservations <booking@pitdrives.com>",
 
         // CHANGE THIS if reservations should go somewhere else.
-        to: ["abenezer@pitdrives.com"],
+        to: ["info@pitdrives.com"],
 
         // Clicking Reply will reply directly to the customer.
         replyTo: booking.email,
