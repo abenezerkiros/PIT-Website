@@ -291,7 +291,7 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
                 </button>
                 <button type="submit" disabled={submitting}
                   className="inline-flex min-h-[46px] items-center justify-center gap-3 rounded-sm bg-[#b7a071] px-5 py-3 text-[14px] font-semibold text-[#17130d] transition-colors hover:bg-[#d4bf94] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d4bf94] disabled:cursor-wait disabled:opacity-60">
-                  {submitting ? "Sending…" : lastStep ? "Send request" : "Continue"}
+                  {submitting ? "Sending…" : lastStep ? "Start Conversation" : "Continue"}
                   {!submitting && <Arrow />}
                 </button>
               </div>
