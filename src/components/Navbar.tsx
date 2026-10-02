@@ -11,7 +11,6 @@ const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Fleet", href: "#fleet" },
   { label: "Partners", href: "#partners" },
-  { label: "Contact", href: "#contact" },
 ];
 
 function ReserveButton({
