@@ -28,7 +28,7 @@ type Field = {
   autoComplete?: string;
 };
 
-const steps: { label: string; title: string; fields: Field[] }[] = [
+const bookingSteps: { label: string; title: string; fields: Field[] }[] = [
   {
     label: "The journey", title: "Where are we taking you?",
     fields: [
@@ -79,6 +79,24 @@ function Arrow({ back = false }: { back?: boolean }) {
 
 export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: string }) {
   const [step, setStep] = useState(0);
+  const [steps, setSteps] = useState(bookingSteps);
+  const [orderReady, setOrderReady] = useState(false);
+  const hasStarted = useRef(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const chooseOrder = () => {
+      // Keep the chosen sequence once the visitor starts filling in the form.
+      if (hasStarted.current) return;
+      setSteps(desktop.matches
+        ? bookingSteps
+        : [bookingSteps[1], bookingSteps[0], ...bookingSteps.slice(2)]);
+      setOrderReady(true);
+    };
+    chooseOrder();
+    desktop.addEventListener("change", chooseOrder);
+    return () => desktop.removeEventListener("change", chooseOrder);
+  }, []);
   const [direction, setDirection] = useState(1);
   const [values, setValues] = useState<BookingValues>(initialValues);
   const [submitting, setSubmitting] = useState(false);
@@ -95,6 +113,8 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
   const inView = useInView(heroRef, { once: false, amount: 0.15 });
   const visible = reduceMotion || inView;
   const current = steps[step];
+  const isJourneyStep = current.fields.some((field) => field.name === "pickup");
+  const isContactStep = current.fields.some((field) => field.name === "contactName");
   const lastStep = step === steps.length - 1;
 
   useEffect(() => {
@@ -119,12 +139,14 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
   }, [submitted, reduceMotion]);
 
   function update(field: FieldName, value: string) {
+    hasStarted.current = true;
     setValues((previous) => ({ ...previous, [field]: value }));
     setError("");
   }
 
   function navigate(next: number) {
     if (submissionLock.current || next < 0 || next >= steps.length) return;
+    hasStarted.current = true;
     focusNextStep.current = true;
     setDirection(next > step ? 1 : -1);
     setStep(next);
@@ -133,6 +155,7 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    hasStarted.current = true;
     if (submissionLock.current || !formRef.current?.reportValidity()) return;
     if (!lastStep) {
       navigate(step + 1);
@@ -210,7 +233,7 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
               </p>
             </motion.div>
           ) : (
-            <form ref={formRef} onSubmit={handleSubmit} aria-busy={submitting} className="grid grid-cols-1 gap-x-5 gap-y-3 lg:grid-cols-[minmax(0,1fr)_auto]">
+            <form style={{ visibility: orderReady ? "visible" : "hidden" }} ref={formRef} onSubmit={handleSubmit} aria-busy={submitting} className="grid grid-cols-1 gap-x-5 gap-y-3 lg:grid-cols-[minmax(0,1fr)_auto]">
               <div className="col-span-full flex items-center justify-between gap-4">
                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#d4bf94]">{current.label}</p>
                 <span className="shrink-0 text-[12px] tabular-nums text-white/65">{String(step + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}</span>
@@ -225,7 +248,7 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
                 <h2 ref={stepHeadingRef} id={`${id}-step-heading`} tabIndex={-1} className="sr-only">{current.title}</h2>
                 <fieldset disabled={submitting} className="min-w-0">
                   <legend className="sr-only">{current.title}</legend>
-                  <div className={`grid min-w-0 gap-4 ${step === 0 ? "sm:grid-cols-2 xl:grid-cols-[1.2fr_1.2fr_1fr_1fr]" : step === 5 ? "sm:grid-cols-3" : "grid-cols-1"}`}>
+                  <div className={`grid min-w-0 gap-4 ${isJourneyStep ? "sm:grid-cols-2 xl:grid-cols-[1.2fr_1.2fr_1fr_1fr]" : isContactStep ? "sm:grid-cols-3" : "grid-cols-1"}`}>
                     {current.fields.map((field) => {
                       const fieldId = `${id}-${field.name}`;
                       const shared = {
@@ -255,13 +278,13 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
                       );
                     })}
                   </div>
-                  {step === 0 && <p id={`${id}-time-note`} className="mt-3 text-[12px] leading-5 text-white/60">Please use the local time at your pick-up location.</p>}
+                  {isJourneyStep && <p id={`${id}-time-note`} className="mt-3 text-[12px] leading-5 text-white/60">Please use the local time at your pick-up location.</p>}
                 </fieldset>
               </motion.div>
 
 
 
-              <div className={`flex items-end justify-end gap-2 ${step === 0 ? "lg:pb-[32px]" : ""}`}>
+              <div className={`flex items-end justify-end gap-2 ${isJourneyStep ? "lg:pb-[32px]" : ""}`}>
                 <button type="button" onClick={() => navigate(step - 1)} disabled={step === 0 || submitting}
                   className={`inline-flex min-h-[46px] items-center gap-2 rounded px-2 text-[14px] text-white/75 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4bf94] disabled:opacity-40 ${step === 0 ? "hidden" : ""}`}>
                   <Arrow back /> Back
