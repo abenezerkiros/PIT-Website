@@ -30,10 +30,6 @@ type Field = {
 
 const steps: { label: string; title: string; fields: Field[] }[] = [
   {
-    label: "The traveler", title: "Who are we serving?",
-    fields: [{ name: "traveler", label: "Name of the principal or person traveling", placeholder: "Full name", required: true, maxLength: 150 }],
-  },
-  {
     label: "The journey", title: "Where are we taking you?",
     fields: [
       { name: "pickup", label: "Pick-up location", placeholder: "Address, airport, hotel, or venue", required: true, maxLength: 500 },
@@ -41,6 +37,10 @@ const steps: { label: string; title: string; fields: Field[] }[] = [
       { name: "date", label: "Date", type: "date", required: true },
       { name: "time", label: "Pick-up time", type: "time", required: true },
     ],
+  },
+  {
+    label: "The traveler", title: "Who are we serving?",
+    fields: [{ name: "traveler", label: "Name of the principal or person traveling", placeholder: "Full name", required: true, maxLength: 150 }],
   },
   {
     label: "The occasion", title: "What brings you here?",
@@ -225,7 +225,7 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
                 <h2 ref={stepHeadingRef} id={`${id}-step-heading`} tabIndex={-1} className="sr-only">{current.title}</h2>
                 <fieldset disabled={submitting} className="min-w-0">
                   <legend className="sr-only">{current.title}</legend>
-                  <div className={`grid min-w-0 gap-4 ${step === 1 ? "sm:grid-cols-2 xl:grid-cols-[1.2fr_1.2fr_1fr_1fr]" : step === 5 ? "sm:grid-cols-3" : "grid-cols-1"}`}>
+                  <div className={`grid min-w-0 gap-4 ${step === 0 ? "sm:grid-cols-2 xl:grid-cols-[1.2fr_1.2fr_1fr_1fr]" : step === 5 ? "sm:grid-cols-3" : "grid-cols-1"}`}>
                     {current.fields.map((field) => {
                       const fieldId = `${id}-${field.name}`;
                       const shared = {
@@ -255,13 +255,13 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
                       );
                     })}
                   </div>
-                  {step === 1 && <p id={`${id}-time-note`} className="mt-3 text-[12px] leading-5 text-white/60">Please use the local time at your pick-up location.</p>}
+                  {step === 0 && <p id={`${id}-time-note`} className="mt-3 text-[12px] leading-5 text-white/60">Please use the local time at your pick-up location.</p>}
                 </fieldset>
               </motion.div>
 
 
 
-              <div className={`flex items-end justify-end gap-2 ${step === 1 ? "lg:pb-[32px]" : ""}`}>
+              <div className={`flex items-end justify-end gap-2 ${step === 0 ? "lg:pb-[32px]" : ""}`}>
                 <button type="button" onClick={() => navigate(step - 1)} disabled={step === 0 || submitting}
                   className={`inline-flex min-h-[46px] items-center gap-2 rounded px-2 text-[14px] text-white/75 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4bf94] disabled:opacity-40 ${step === 0 ? "hidden" : ""}`}>
                   <Arrow back /> Back
