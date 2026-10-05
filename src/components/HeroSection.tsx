@@ -41,7 +41,7 @@ export default function HeroSection() {
           }}
         >
           <Image
-            src="/hero.jpg"
+            src="/hero.png"
             alt=""
             fill
             priority

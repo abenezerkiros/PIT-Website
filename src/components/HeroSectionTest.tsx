@@ -469,7 +469,7 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
         <motion.div className="absolute inset-0" initial={false}
           animate={{ scale: reduceMotion || inView ? 1 : 1.04 }}
           transition={{ duration: reduceMotion ? 0 : 1.8, ease }}>
-          <Image src="/hero.jpg" alt="" fill priority sizes="100vw" className="object-cover object-center" />
+          <Image src="/hero.png" alt="" fill priority sizes="100vw" className="object-cover object-center" />
         </motion.div>
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/20" />
