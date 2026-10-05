@@ -1,17 +1,37 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-
 const BOOKING_URL =
   "https://book.mylimobiz.com/v4/pittransportation";
-
 const navLinks = [
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Fleet", href: "#fleet" },
   { label: "Partners", href: "#partners" },
 ];
+function PhoneLink({ expanded = false, onClick }: { expanded?: boolean; onClick: () => void }) {
+  return (
+    <a
+      href="tel:+18884129150"
+      aria-label="Call Premier at +1-888-412-9150"
+      onClick={onClick}
+      className={`group inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center gap-2.5 text-[#b7a071] transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227] motion-reduce:transition-none ${
+        expanded
+          ? "mt-4 w-full rounded-md px-2 py-3 hover:bg-white/5"
+          : "justify-center rounded-full border border-[#b7a071]/25 hover:border-[#b7a071]/60 md:justify-start md:rounded-none md:border-0"
+      }`}
+    >
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.79a2 2 0 0 1-.45 2.11L8.09 9.89a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.89.33 1.83.56 2.79.69A2 2 0 0 1 22 16.92Z" />
+      </svg>
+      <span className={`${expanded ? "flex" : "hidden md:flex"} flex-col gap-1`}>
+        <span className="text-[10px] font-medium uppercase leading-none tracking-[0.14em] text-white/45">Call Premier</span>
+        <span className={`${expanded ? "text-[16px]" : "text-[14px]"} whitespace-nowrap font-medium leading-5 tracking-[0.02em] text-white/85 transition-colors group-hover:text-[#d5bc89]`}>+1-888-412-9150</span>
+      </span>
+    </a>
+  );
+}
 
 function ReserveButton({
   className = "",
@@ -38,23 +58,17 @@ function ReserveButton({
     </a>
   );
 }
-
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const lastScrollY = useRef(0);
-
   useEffect(() => {
     let frame: number | null = null;
-
     const update = () => {
       const currentY = Math.max(0, window.scrollY);
       const delta = currentY - lastScrollY.current;
-
       setIsScrolled(currentY > 20);
-
       if (currentY < 120) {
         setIsHidden(false);
         lastScrollY.current = currentY;
@@ -62,50 +76,39 @@ export default function Navbar() {
         setIsHidden(delta > 0);
         lastScrollY.current = currentY;
       }
-
       frame = null;
     };
-
     const handleScroll = () => {
       if (frame === null) {
         frame = requestAnimationFrame(update);
       }
     };
-
     lastScrollY.current = window.scrollY;
     update();
-
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (frame !== null) cancelAnimationFrame(frame);
     };
   }, []);
-
   useEffect(() => {
     // Allow enough space for the logo, links, and reservation button.
     const desktop = window.matchMedia("(min-width: 1280px)");
-
     const closeOnDesktop = () => {
       if (desktop.matches) setIsMobileMenuOpen(false);
     };
-
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setIsMobileMenuOpen(false);
     };
-
     desktop.addEventListener("change", closeOnDesktop);
     window.addEventListener("keydown", closeOnEscape);
-
     return () => {
       desktop.removeEventListener("change", closeOnDesktop);
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, []);
-
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-[background-color,box-shadow,transform] duration-300 ease-out motion-reduce:transition-none ${
@@ -126,18 +129,17 @@ export default function Navbar() {
         <a
           href="#top"
           onClick={() => setIsMobileMenuOpen(false)}
-          className="relative block h-[62px] w-[186px] shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227] lg:h-[74px] lg:w-[222px]"
+          className="relative block h-[62px] w-[min(168px,42vw)] shrink-0 sm:w-[186px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227] lg:h-[74px] lg:w-[222px]"
         >
           <Image
             src="/logo.png"
             alt="Premier International Transportation"
             fill
-            sizes="(min-width: 1024px) 222px, 186px"
+            sizes="(min-width: 1024px) 222px, (min-width: 640px) 186px, 168px"
             className="object-contain object-left"
             priority
           />
         </a>
-
         {/* Desktop links */}
         <div className="hidden items-center gap-3 xl:flex 2xl:gap-5">
           {navLinks.map((link) => (
@@ -150,11 +152,11 @@ export default function Navbar() {
             </a>
           ))}
         </div>
-
-        {/* Reservation button and mobile toggle */}
-        <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+        {/* Phone, reservation button and mobile toggle */}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+          <PhoneLink onClick={() => setIsMobileMenuOpen(false)} />
+          <span aria-hidden="true" className="hidden h-7 w-px bg-white/15 md:block" />
           <ReserveButton className="hidden sm:inline-flex" />
-
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen((open) => !open)}
@@ -171,14 +173,12 @@ export default function Navbar() {
                   : "-translate-y-[7px]"
               }`}
             />
-
             <span
               aria-hidden="true"
               className={`absolute h-[2px] w-[24px] bg-current transition-opacity duration-200 motion-reduce:transition-none ${
                 isMobileMenuOpen ? "opacity-0" : "opacity-100"
               }`}
             />
-
             <span
               aria-hidden="true"
               className={`absolute h-[2px] w-[24px] bg-current transition-transform duration-300 motion-reduce:transition-none ${
@@ -190,7 +190,6 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
-
       {/* Mobile dropdown */}
       {isMobileMenuOpen && (
         <nav
@@ -208,14 +207,13 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-
+          <PhoneLink expanded onClick={() => setIsMobileMenuOpen(false)} />
           <ReserveButton
             className="mt-5 flex w-full sm:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
         </nav>
       )}
-
       <style jsx global>{`
         .reserve-button {
           background-color: #806b43;
@@ -224,14 +222,12 @@ export default function Navbar() {
             background-color 350ms ease,
             color 250ms ease;
         }
-
         .reserve-button:focus-visible {
           background-color: #a38d65;
           color: #080808;
           outline: 2px solid #d5bc89;
           outline-offset: 5px;
         }
-
         .reserve-button .reserve-shine {
           left: -40%;
           width: 30%;
@@ -246,27 +242,22 @@ export default function Navbar() {
           transform: translateX(0) skewX(-25deg);
           transition: transform 400ms cubic-bezier(0.45, 0, 0.55, 1);
         }
-
         @media (hover: hover) {
           .reserve-button:hover {
             background-color: #a38d65;
             color: #080808;
           }
-
           .reserve-button:hover .reserve-shine {
             transform: translateX(500%) skewX(-25deg);
           }
         }
-
         .reserve-button:focus-visible .reserve-shine {
           transform: translateX(500%) skewX(-25deg);
         }
-
         @media (prefers-reduced-motion: reduce) {
           .reserve-button {
             transition: none;
           }
-
           .reserve-button .reserve-shine {
             display: none;
             transition: none;

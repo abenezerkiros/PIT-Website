@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
-
+import WhatsAppButton from "@/components/WhatsAppButton";
 const geist = localFont({
   src: "../../public/fonts/Geist.ttf",
   variable: "--font-body",
@@ -31,6 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geist.variable} ${fragmentGlare.variable}`}>
         <SmoothScroll>{children}</SmoothScroll>
+        <WhatsAppButton />
       </body>
     </html>
   );

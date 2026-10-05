@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -66,6 +67,275 @@ const bookingSteps: { label: string; title: string; fields: Field[] }[] = [
 
 const inputClass =
   "block min-h-[48px] w-full min-w-0 rounded-md border border-white/20 bg-white/[0.07] px-3.5 py-3 text-[16px] leading-5 text-white outline-none transition-colors placeholder:text-white/45 hover:border-white/40 focus:border-[#d4bf94] focus:ring-1 focus:ring-[#d4bf94]/40 disabled:opacity-60 [color-scheme:dark]";
+
+// Native fetch keeps this integration free of extra npm dependencies.
+// Configure NEXT_PUBLIC_GEOAPIFY_API_KEY in .env.local and your hosting settings.
+type LocationSuggestion = {
+  place_id: string;
+  formatted: string;
+  address_line1?: string;
+  address_line2?: string;
+  name?: string;
+  categories?: string[];
+  exactAirportCode?: boolean;
+};
+
+// Airports come from the server-side OurAirports dataset; addresses use Geoapify.
+function prioritizeLocations(airportResults: LocationSuggestion[], addressResults: LocationSuggestion[]) {
+  const seenIds = new Set<string>();
+  const seenAddresses = new Set<string>();
+  return [...airportResults, ...addressResults].filter((item) => {
+    const address = item.formatted.toLowerCase().replace(/\s+/g, " ").trim();
+    if ((item.place_id && seenIds.has(item.place_id)) || seenAddresses.has(address)) return false;
+    if (item.place_id) seenIds.add(item.place_id);
+    seenAddresses.add(address);
+    return true;
+  }).sort((a, b) => {
+    const isAirport = (item: LocationSuggestion) =>
+      item.categories?.some((category) => category === "airport" || category.startsWith("airport.")) ||
+      /\b(airport|aerodrome)\b/i.test(item.name || item.address_line1 || "");
+    return Number(Boolean(b.exactAirportCode)) - Number(Boolean(a.exactAirportCode)) ||
+      Number(Boolean(isAirport(b))) - Number(Boolean(isAirport(a)));
+  }).slice(0, 8);
+}
+
+async function searchLocations(query: string, key: string, signal: AbortSignal) {
+  const addressParams = new URLSearchParams({
+    apiKey: key, lang: "en", limit: "6", bias: "proximity:-77.0369,38.9072",
+    text: query, format: "json",
+  });
+  const [addresses, airports] = await Promise.allSettled([
+    (async (): Promise<LocationSuggestion[]> => {
+      if (!key) throw new Error("Missing Geoapify API key");
+      const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?${addressParams}`, { signal });
+      if (!response.ok) throw new Error("Address search unavailable");
+      const data: { results?: LocationSuggestion[] } = await response.json();
+      return (data.results ?? []).filter((item) => typeof item.formatted === "string");
+    })(),
+    (async (): Promise<LocationSuggestion[]> => {
+      const params = new URLSearchParams({ q: query });
+      const response = await fetch(`/api/airports?${params}`, { signal });
+      if (!response.ok) throw new Error("Airport search unavailable");
+      const data: { results?: LocationSuggestion[] } = await response.json();
+      return (data.results ?? []).filter((item) => typeof item.formatted === "string");
+    })(),
+  ]);
+  if (addresses.status === "rejected" && airports.status === "rejected") {
+    throw new Error("Location search unavailable");
+  }
+  return {
+    items: prioritizeLocations(airports.status === "fulfilled" ? airports.value : [], addresses.status === "fulfilled" ? addresses.value : []),
+    complete: addresses.status === "fulfilled" && airports.status === "fulfilled",
+    warning: airports.status === "rejected"
+      ? "Airport suggestions are temporarily unavailable. You can still enter your airport."
+      : addresses.status === "rejected"
+        ? "Address suggestions are temporarily unavailable. You can still enter your address."
+        : "",
+  };
+}
+
+type LocationProps = {
+  id: string;
+  name: string;
+  value: string;
+  required?: boolean;
+  placeholder?: string;
+  maxLength?: number;
+  onChange: (value: string) => void;
+};
+
+function LocationAutocomplete({ onChange, ...props }: LocationProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const cache = useRef(new Map<string, LocationSuggestion[]>());
+  const requestId = useRef(0);
+  const selectedValue = useRef<string | null>(null);
+  const [focused, setFocused] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [predictions, setPredictions] = useState<LocationSuggestion[]>([]);
+  const [active, setActive] = useState(-1);
+  const [message, setMessage] = useState("");
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 0, height: 280, above: false });
+  const listId = `${props.id}-suggestions`;
+
+  useEffect(() => {
+    const sequence = ++requestId.current;
+    if (!focused || props.value.trim().length < 3 || selectedValue.current === props.value) {
+      setOpen(false);
+      return;
+    }
+    setPredictions([]);
+    setActive(-1);
+    setMessage("Searching locations…");
+    setOpen(true);
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      if (requestId.current !== sequence) return;
+      try {
+        const key = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY ?? "";
+        const query = props.value.trim();
+        let items = cache.current.get(query.toLowerCase());
+        let warning = "";
+        if (!items) {
+          const result = await searchLocations(query, key, controller.signal);
+          items = result.items;
+          warning = result.warning;
+          if (result.complete) {
+            if (cache.current.size >= 50) cache.current.clear();
+            cache.current.set(query.toLowerCase(), items);
+          }
+        }
+        if (requestId.current !== sequence) return;
+        setPredictions(items);
+        setMessage(warning || (items.length ? "" : "No suggestions. You can enter the full address."));
+      } catch {
+        if (requestId.current !== sequence) return;
+        setMessage("Suggestions unavailable. Please enter the full address.");
+      }
+    }, 400);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+      ++requestId.current;
+    };
+  }, [props.value, focused]);
+
+  // Portal avoids clipping by the hero and its translucent form container.
+  useEffect(() => {
+    if (!open) return;
+    const reposition = () => {
+      const rect = inputRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const viewport = window.visualViewport;
+      const viewportTop = viewport?.offsetTop ?? 0;
+      const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight);
+      const below = viewportBottom - rect.bottom - 12;
+      const above = rect.top - viewportTop - 12;
+      const showAbove = below < 280 && above > below;
+      const height = Math.max(0, Math.min(320, showAbove ? above : below));
+      const width = Math.min(Math.max(rect.width, 280), document.documentElement.clientWidth - 24);
+      setPosition({
+        left: Math.max(12, Math.min(rect.left, document.documentElement.clientWidth - width - 12)),
+        top: showAbove ? rect.top - 6 : rect.bottom + 6,
+        above: showAbove,
+        width,
+        height,
+      });
+    };
+    reposition();
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    window.visualViewport?.addEventListener("resize", reposition);
+    window.visualViewport?.addEventListener("scroll", reposition);
+    return () => {
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+      window.visualViewport?.removeEventListener("resize", reposition);
+      window.visualViewport?.removeEventListener("scroll", reposition);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (active >= 0) listRef.current?.children[active]?.scrollIntoView({ block: "nearest" });
+  }, [active]);
+
+  function choose(prediction: LocationSuggestion) {
+    ++requestId.current;
+    const text = prediction.formatted;
+    selectedValue.current = text;
+    onChange(text);
+    setOpen(false);
+    setActive(-1);
+    inputRef.current?.focus({ preventScroll: true });
+  }
+
+  return (
+    <>
+      <input
+        {...props}
+        ref={inputRef}
+        type="text"
+        className={inputClass}
+        autoComplete="off"
+        spellCheck={false}
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded={open}
+        aria-controls={open ? listId : undefined}
+        aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
+        onFocus={() => setFocused(true)}
+        onBlur={(event) => {
+          if (event.relatedTarget instanceof Node && popupRef.current?.contains(event.relatedTarget)) return;
+          ++requestId.current; setFocused(false); setOpen(false);
+        }}
+        onChange={(event) => {
+          ++requestId.current;
+          selectedValue.current = null;
+          setPredictions([]);
+          setActive(-1);
+          onChange(event.target.value);
+        }}
+        onKeyDown={(event) => {
+          if (event.nativeEvent.isComposing) return;
+          if (event.key === "Escape") {
+            ++requestId.current;
+            setOpen(false);
+          } else if (open && predictions.length && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+            event.preventDefault();
+            setActive((index) => event.key === "ArrowDown"
+              ? (index + 1) % predictions.length
+              : (index <= 0 ? predictions.length - 1 : index - 1));
+          } else if (open && event.key === "Enter") {
+            event.preventDefault();
+            if (active >= 0 && predictions[active]) choose(predictions[active]);
+            else setOpen(false);
+          }
+        }}
+      />
+      {open && position.width > 0 && createPortal(
+        <div
+          ref={popupRef}
+          onBlur={(event) => {
+            if (event.relatedTarget instanceof Node &&
+              (event.currentTarget.contains(event.relatedTarget) || event.relatedTarget === inputRef.current)) return;
+            ++requestId.current; setFocused(false); setOpen(false);
+          }}
+          data-lenis-prevent
+          className="fixed z-[1000] flex flex-col overflow-hidden rounded-md border border-[#d4bf94]/30 bg-[#151515] text-white shadow-2xl"
+          style={{ left: position.left, top: position.top, width: position.width, maxHeight: position.height, transform: position.above ? "translateY(-100%)" : undefined }}
+          onPointerDown={(event) => {
+            if (!(event.target as HTMLElement).closest("a")) event.preventDefault();
+          }}
+        >
+          <ul id={listId} ref={listRef} role="listbox" aria-label="Suggested locations"
+            className="m-0 min-h-0 list-none overflow-y-auto overscroll-contain p-1">
+            {predictions.map((prediction, index) => (
+              <li key={prediction.place_id || prediction.formatted} id={`${listId}-${index}`} role="option"
+                aria-selected={index === active}
+                onClick={() => choose(prediction)}
+                className={`cursor-pointer rounded px-3 py-3 text-[14px] leading-5 hover:bg-white/10 ${index === active ? "bg-white/10" : ""}`}>
+                <span className="block font-medium text-[#e0c99b]">
+                  {prediction.address_line1 || prediction.name || prediction.formatted}
+                </span>
+                {prediction.address_line2 && <span className="mt-1 block text-[12px] text-white/65">{prediction.address_line2}</span>}
+              </li>
+            ))}
+          </ul>
+          {message && <p role="status" className="px-4 py-3 text-[13px] leading-5 text-white/70">{message}</p>}
+          <div className="shrink-0 border-t border-white/10 px-4 py-2 text-right">
+            <span className="text-[11px] leading-4 text-white/65">
+              Powered by <a href="https://www.geoapify.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Geoapify</a>
+              {" · "}© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">OpenStreetMap</a> contributors
+              {" · "}Airports: <a href="https://ourairports.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">OurAirports</a>
+            </span>
+          </div>
+        </div>,
+        document.body,
+      )}
+    </>
+  );
+}
 
 function Arrow({ back = false }: { back?: boolean }) {
   return (
@@ -261,7 +531,14 @@ export default function HeroSection({ endpoint = "/api/booking" }: { endpoint?: 
                           <label htmlFor={fieldId} className="mb-2 block text-[13px] font-medium leading-5 text-white/85">
                             {field.label}{!field.required && <span className="ml-2 font-normal text-white/45">(optional)</span>}
                           </label>
-                          {field.type === "select" ? (
+                          {field.name === "pickup" || field.name === "dropoff" ? (
+                            <LocationAutocomplete
+                              id={fieldId} name={field.name} value={values[field.name]}
+                              required={field.required} maxLength={field.maxLength}
+                              placeholder={field.placeholder}
+                              onChange={(value) => update(field.name, value)}
+                            />
+                          ) : field.type === "select" ? (
                             <select {...shared} onChange={(event) => update(field.name, event.target.value)}>
                               <option value="" disabled className="bg-[#151515]">Select the purpose of your trip</option>
                               {purposes.map((purpose) => <option key={purpose} value={purpose} className="bg-[#151515]">{purpose}</option>)}

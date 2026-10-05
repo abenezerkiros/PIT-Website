@@ -138,7 +138,7 @@ export default function ConversationSection({
 
           <div className="relative flex min-h-[340px] items-center px-7 py-12 md:px-14 md:py-14 lg:px-20">
   <motion.div
-    className="w-full max-w-[1150px]"
+   className="mx-auto w-full max-w-[1150px]"
     initial={false}
     animate={{
       y: visible ? 0 : 40,
@@ -160,17 +160,17 @@ export default function ConversationSection({
     One Suburban. One founder. A city he learned street by street; first on a delivery bike, then opening doors at one of Washington's most storied hotels. 
     </p>
 
-    <a
-      href={contactHref}
-      className="mt-8 inline-flex min-h-14 max-w-full items-center justify-between gap-5 border border-black bg-[#957E5E] px-6 py-4 text-left text-sm font-medium leading-6 text-black hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:text-base"
-    >
-      <span>
-      Washington taught us to serve. Everything we promise elsewhere, we proved here first.
-
-      </span>
-
-    
-    </a>
+    <div className="mt-8 flex w-full translate-y-6 justify-center md:translate-y-8">
+  <a
+    href={contactHref}
+    className="inline-flex min-h-14 max-w-full items-center justify-center border border-black bg-[#957E5E] px-6 py-4 text-center text-sm font-medium leading-6 text-black transition-colors hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:text-base"
+  >
+    <span>
+      Washington taught us to serve. Everything we promise elsewhere,
+      we proved here first.
+    </span>
+  </a>
+</div>
   </motion.div>
 </div>
         </section>
