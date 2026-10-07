@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Fleet", href: "#fleet" },
   { label: "Partners", href: "#partners" },
+  { label: "Contact", href: "#contact" },
 ];
 function PhoneLink({ expanded = false, onClick }: { expanded?: boolean; onClick: () => void }) {
   return (
@@ -155,8 +156,7 @@ export default function Navbar() {
         {/* Phone, reservation button and mobile toggle */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           <PhoneLink onClick={() => setIsMobileMenuOpen(false)} />
-          <span aria-hidden="true" className="hidden h-7 w-px bg-white/15 md:block" />
-          <ReserveButton className="hidden sm:inline-flex" />
+       
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen((open) => !open)}

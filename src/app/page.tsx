@@ -1,4 +1,4 @@
-import HeroSection from "@/components/HeroSectionTest";
+import HeroSection from "@/components/HeroSection";
 import OurServices from "@/components/OurServices";
 import ItSolutions from "@/components/ItSolutions";
 import Fleet from "@/components/Fleet";
@@ -33,7 +33,7 @@ export default function Home() {
   
 
 
-
+      <Booking/>
       <GetAQuote/>
       <Footer/>
     </main>
