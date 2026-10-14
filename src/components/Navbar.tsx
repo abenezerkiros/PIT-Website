@@ -5,7 +5,7 @@ const BOOKING_URL =
   "https://book.mylimobiz.com/v4/pittransportation";
 const navLinks = [
   { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
+  { label: "Services", href: "/executives" },
   { label: "Fleet", href: "#fleet" },
   { label: "Partners", href: "#partners" },
   { label: "Contact", href: "#contact" },
