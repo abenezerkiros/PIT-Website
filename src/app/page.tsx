@@ -33,7 +33,8 @@ export default function Home() {
   
 
 
-      <Booking/>
+
+      <Booking imageSrc="/final.jpg" />
       <GetAQuote/>
       <Footer/>
     </main>

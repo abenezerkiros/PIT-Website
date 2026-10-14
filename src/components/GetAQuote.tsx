@@ -19,13 +19,7 @@ export default function GetAQuote() {
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 -z-10"
       >
-        <Image
-          src={bannerImage}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+     
       </div>
 
 

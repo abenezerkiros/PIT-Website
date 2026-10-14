@@ -10,6 +10,8 @@ const partners = [
   { src: "/Partnerlogo4.png", name: "Partner institution 4" },
   { src: "/Partnerlogo5.png", name: "Partner institution 5" },
   { src: "/Partnerlogo6.png", name: "Partner institution 6" },
+  { src: "/Partnerlogo7.png", name: "Partner institution 7" },
+  { src: "/Partnerlogo8.png", name: "Partner institution 8" },
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;

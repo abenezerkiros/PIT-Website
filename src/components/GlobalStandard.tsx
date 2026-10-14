@@ -100,9 +100,13 @@ export default function GlobalStandard({
               <ellipse cx="24" cy="24" rx="9" ry="19" />
               <path d="M5 24h38M9 13h30M9 35h30" />
             </svg>
-
+            <p className="max-w-[680px] text-xl leading-[1.7] text-white/90 md:text-2xl">
+            From your city to the other side of the world, the same duty of care.</p>
+            <br />
             <p className="max-w-[660px] text-xl leading-[1.7] text-white/90 md:text-2xl">
-            From your city to the other side of the world. The same Client Experience Lead. The same briefing before you arrive. The same chauffeur assignment. The same fleet.
+
+Beyond Washington, we work with a select network of partners, each vetted by us and held to the Premier standard. Your Client Experience Lead stays with you throughout, briefs the local team before you land, and confirms your chauffeur is chosen with intention.
+
 
             </p>
             <p

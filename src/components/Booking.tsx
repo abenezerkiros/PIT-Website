@@ -1,12 +1,15 @@
 "use client";
-
-import { useRef, useState,useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { FormEvent } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
-
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useReducedMotion,
+} from "framer-motion";
 const ease = [0.22, 1, 0.36, 1] as const;
-
 const purposes = [
   "Business meeting",
   "Entertainment Detail",
@@ -16,7 +19,6 @@ const purposes = [
   "Event",
   "Other",
 ];
-
 const steps = [
   {
     label: "The traveler",
@@ -27,14 +29,12 @@ const steps = [
   {
     label: "The journey",
     title: "Now, tell us the logistics.",
-    description:
-      "Where should the journey begin, and where are we taking you?",
+    description: "Where should the journey begin, and where are we taking you?",
   },
   {
     label: "The occasion",
     title: "What is the purpose of this trip?",
-    description:
-      "A little context helps us prepare the right experience.",
+    description: "A little context helps us prepare the right experience.",
   },
   {
     label: "Your expectations",
@@ -61,7 +61,6 @@ const steps = [
       "Review your details, then send your request to our Client Experience Team.",
   },
 ];
-
 const initialValues = {
   traveler: "",
   purpose: "",
@@ -75,14 +74,10 @@ const initialValues = {
   email: "",
   phone: "",
 };
-
 type BookingValues = typeof initialValues;
-
 const inputClass =
   "w-full rounded-lg border border-white/20 bg-white/[0.035] px-4 py-4 text-base text-white outline-none transition-colors placeholder:text-white/35 hover:border-white/35 focus:border-[#c9a227] focus:bg-white/[0.055] disabled:opacity-50";
-
 const labelClass = "mb-3 block text-sm font-medium text-white/75";
-
 // Native fetch keeps this integration free of extra npm dependencies.
 // Configure NEXT_PUBLIC_GEOAPIFY_API_KEY in .env.local and your hosting settings.
 type LocationSuggestion = {
@@ -94,61 +89,94 @@ type LocationSuggestion = {
   categories?: string[];
   exactAirportCode?: boolean;
 };
-
 // Airports come from the server-side OurAirports dataset; addresses use Geoapify.
-function prioritizeLocations(airportResults: LocationSuggestion[], addressResults: LocationSuggestion[]) {
+function prioritizeLocations(
+  airportResults: LocationSuggestion[],
+  addressResults: LocationSuggestion[],
+) {
   const seenIds = new Set<string>();
   const seenAddresses = new Set<string>();
-  return [...airportResults, ...addressResults].filter((item) => {
-    const address = item.formatted.toLowerCase().replace(/\s+/g, " ").trim();
-    if ((item.place_id && seenIds.has(item.place_id)) || seenAddresses.has(address)) return false;
-    if (item.place_id) seenIds.add(item.place_id);
-    seenAddresses.add(address);
-    return true;
-  }).sort((a, b) => {
-    const isAirport = (item: LocationSuggestion) =>
-      item.categories?.some((category) => category === "airport" || category.startsWith("airport.")) ||
-      /\b(airport|aerodrome)\b/i.test(item.name || item.address_line1 || "");
-    return Number(Boolean(b.exactAirportCode)) - Number(Boolean(a.exactAirportCode)) ||
-      Number(Boolean(isAirport(b))) - Number(Boolean(isAirport(a)));
-  }).slice(0, 8);
+  return [...airportResults, ...addressResults]
+    .filter((item) => {
+      const address = item.formatted.toLowerCase().replace(/\s+/g, " ").trim();
+      if (
+        (item.place_id && seenIds.has(item.place_id)) ||
+        seenAddresses.has(address)
+      )
+        return false;
+      if (item.place_id) seenIds.add(item.place_id);
+      seenAddresses.add(address);
+      return true;
+    })
+    .sort((a, b) => {
+      const isAirport = (item: LocationSuggestion) =>
+        item.categories?.some(
+          (category) =>
+            category === "airport" || category.startsWith("airport."),
+        ) ||
+        /\b(airport|aerodrome)\b/i.test(item.name || item.address_line1 || "");
+      return (
+        Number(Boolean(b.exactAirportCode)) -
+          Number(Boolean(a.exactAirportCode)) ||
+        Number(Boolean(isAirport(b))) - Number(Boolean(isAirport(a)))
+      );
+    })
+    .slice(0, 8);
 }
-
-async function searchLocations(query: string, key: string, signal: AbortSignal) {
+async function searchLocations(
+  query: string,
+  key: string,
+  signal: AbortSignal,
+) {
   const addressParams = new URLSearchParams({
-    apiKey: key, lang: "en", limit: "6", bias: "proximity:-77.0369,38.9072",
-    text: query, format: "json",
+    apiKey: key,
+    lang: "en",
+    limit: "6",
+    bias: "proximity:-77.0369,38.9072",
+    text: query,
+    format: "json",
   });
   const [addresses, airports] = await Promise.allSettled([
     (async (): Promise<LocationSuggestion[]> => {
       if (!key) throw new Error("Missing Geoapify API key");
-      const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?${addressParams}`, { signal });
+      const response = await fetch(
+        `https://api.geoapify.com/v1/geocode/autocomplete?${addressParams}`,
+        { signal },
+      );
       if (!response.ok) throw new Error("Address search unavailable");
       const data: { results?: LocationSuggestion[] } = await response.json();
-      return (data.results ?? []).filter((item) => typeof item.formatted === "string");
+      return (data.results ?? []).filter(
+        (item) => typeof item.formatted === "string",
+      );
     })(),
     (async (): Promise<LocationSuggestion[]> => {
       const params = new URLSearchParams({ q: query });
       const response = await fetch(`/api/airports?${params}`, { signal });
       if (!response.ok) throw new Error("Airport search unavailable");
       const data: { results?: LocationSuggestion[] } = await response.json();
-      return (data.results ?? []).filter((item) => typeof item.formatted === "string");
+      return (data.results ?? []).filter(
+        (item) => typeof item.formatted === "string",
+      );
     })(),
   ]);
   if (addresses.status === "rejected" && airports.status === "rejected") {
     throw new Error("Location search unavailable");
   }
   return {
-    items: prioritizeLocations(airports.status === "fulfilled" ? airports.value : [], addresses.status === "fulfilled" ? addresses.value : []),
-    complete: addresses.status === "fulfilled" && airports.status === "fulfilled",
-    warning: airports.status === "rejected"
-      ? "Airport suggestions are temporarily unavailable. You can still enter your airport."
-      : addresses.status === "rejected"
-        ? "Address suggestions are temporarily unavailable. You can still enter your address."
-        : "",
+    items: prioritizeLocations(
+      airports.status === "fulfilled" ? airports.value : [],
+      addresses.status === "fulfilled" ? addresses.value : [],
+    ),
+    complete:
+      addresses.status === "fulfilled" && airports.status === "fulfilled",
+    warning:
+      airports.status === "rejected"
+        ? "Airport suggestions are temporarily unavailable. You can still enter your airport."
+        : addresses.status === "rejected"
+          ? "Address suggestions are temporarily unavailable. You can still enter your address."
+          : "",
   };
 }
-
 type LocationProps = {
   id: string;
   name: string;
@@ -158,7 +186,6 @@ type LocationProps = {
   maxLength?: number;
   onChange: (value: string) => void;
 };
-
 function LocationAutocomplete({ onChange, ...props }: LocationProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -171,12 +198,21 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
   const [predictions, setPredictions] = useState<LocationSuggestion[]>([]);
   const [active, setActive] = useState(-1);
   const [message, setMessage] = useState("");
-  const [position, setPosition] = useState({ left: 0, top: 0, width: 0, height: 280, above: false });
+  const [position, setPosition] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 280,
+    above: false,
+  });
   const listId = `${props.id}-suggestions`;
-
   useEffect(() => {
     const sequence = ++requestId.current;
-    if (!focused || props.value.trim().length < 3 || selectedValue.current === props.value) {
+    if (
+      !focused ||
+      props.value.trim().length < 3 ||
+      selectedValue.current === props.value
+    ) {
       setOpen(false);
       return;
     }
@@ -203,7 +239,12 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
         }
         if (requestId.current !== sequence) return;
         setPredictions(items);
-        setMessage(warning || (items.length ? "" : "No suggestions. You can enter the full address."));
+        setMessage(
+          warning ||
+            (items.length
+              ? ""
+              : "No suggestions. You can enter the full address."),
+        );
       } catch {
         if (requestId.current !== sequence) return;
         setMessage("Suggestions unavailable. Please enter the full address.");
@@ -215,7 +256,6 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
       ++requestId.current;
     };
   }, [props.value, focused]);
-
   // Portal keeps suggestions visible outside the animated form panel.
   useEffect(() => {
     if (!open) return;
@@ -224,14 +264,24 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
       if (!rect) return;
       const viewport = window.visualViewport;
       const viewportTop = viewport?.offsetTop ?? 0;
-      const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight);
+      const viewportBottom =
+        viewportTop + (viewport?.height ?? window.innerHeight);
       const below = viewportBottom - rect.bottom - 12;
       const above = rect.top - viewportTop - 12;
       const showAbove = below < 280 && above > below;
       const height = Math.max(0, Math.min(320, showAbove ? above : below));
-      const width = Math.min(Math.max(rect.width, 280), document.documentElement.clientWidth - 24);
+      const width = Math.min(
+        Math.max(rect.width, 280),
+        document.documentElement.clientWidth - 24,
+      );
       setPosition({
-        left: Math.max(12, Math.min(rect.left, document.documentElement.clientWidth - width - 12)),
+        left: Math.max(
+          12,
+          Math.min(
+            rect.left,
+            document.documentElement.clientWidth - width - 12,
+          ),
+        ),
         top: showAbove ? rect.top - 6 : rect.bottom + 6,
         above: showAbove,
         width,
@@ -250,11 +300,10 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
       window.visualViewport?.removeEventListener("scroll", reposition);
     };
   }, [open]);
-
   useEffect(() => {
-    if (active >= 0) listRef.current?.children[active]?.scrollIntoView({ block: "nearest" });
+    if (active >= 0)
+      listRef.current?.children[active]?.scrollIntoView({ block: "nearest" });
   }, [active]);
-
   function choose(prediction: LocationSuggestion) {
     ++requestId.current;
     const text = prediction.formatted;
@@ -264,7 +313,6 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
     setActive(-1);
     inputRef.current?.focus({ preventScroll: true });
   }
-
   return (
     <>
       <input
@@ -278,11 +326,19 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
         aria-autocomplete="list"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
-        aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
+        aria-activedescendant={
+          open && active >= 0 ? `${listId}-${active}` : undefined
+        }
         onFocus={() => setFocused(true)}
         onBlur={(event) => {
-          if (event.relatedTarget instanceof Node && popupRef.current?.contains(event.relatedTarget)) return;
-          ++requestId.current; setFocused(false); setOpen(false);
+          if (
+            event.relatedTarget instanceof Node &&
+            popupRef.current?.contains(event.relatedTarget)
+          )
+            return;
+          ++requestId.current;
+          setFocused(false);
+          setOpen(false);
         }}
         onChange={(event) => {
           ++requestId.current;
@@ -296,11 +352,19 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
           if (event.key === "Escape") {
             ++requestId.current;
             setOpen(false);
-          } else if (open && predictions.length && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+          } else if (
+            open &&
+            predictions.length &&
+            (event.key === "ArrowDown" || event.key === "ArrowUp")
+          ) {
             event.preventDefault();
-            setActive((index) => event.key === "ArrowDown"
-              ? (index + 1) % predictions.length
-              : (index <= 0 ? predictions.length - 1 : index - 1));
+            setActive((index) =>
+              event.key === "ArrowDown"
+                ? (index + 1) % predictions.length
+                : index <= 0
+                  ? predictions.length - 1
+                  : index - 1,
+            );
           } else if (open && event.key === "Enter") {
             event.preventDefault();
             if (active >= 0 && predictions[active]) choose(predictions[active]);
@@ -308,50 +372,111 @@ function LocationAutocomplete({ onChange, ...props }: LocationProps) {
           }
         }}
       />
-      {open && position.width > 0 && createPortal(
-        <div
-          ref={popupRef}
-          onBlur={(event) => {
-            if (event.relatedTarget instanceof Node &&
-              (event.currentTarget.contains(event.relatedTarget) || event.relatedTarget === inputRef.current)) return;
-            ++requestId.current; setFocused(false); setOpen(false);
-          }}
-          data-lenis-prevent
-          className="fixed z-[1000] flex flex-col overflow-hidden rounded-md border border-[#d4bf94]/30 bg-[#151515] text-white shadow-2xl"
-          style={{ left: position.left, top: position.top, width: position.width, maxHeight: position.height, transform: position.above ? "translateY(-100%)" : undefined }}
-          onPointerDown={(event) => {
-            if (!(event.target as HTMLElement).closest("a")) event.preventDefault();
-          }}
-        >
-          <ul id={listId} ref={listRef} role="listbox" aria-label="Suggested locations"
-            className="m-0 min-h-0 list-none overflow-y-auto overscroll-contain p-1">
-            {predictions.map((prediction, index) => (
-              <li key={prediction.place_id || prediction.formatted} id={`${listId}-${index}`} role="option"
-                aria-selected={index === active}
-                onClick={() => choose(prediction)}
-                className={`cursor-pointer rounded px-3 py-3 text-[14px] leading-5 hover:bg-white/10 ${index === active ? "bg-white/10" : ""}`}>
-                <span className="block font-medium text-[#e0c99b]">
-                  {prediction.address_line1 || prediction.name || prediction.formatted}
-                </span>
-                {prediction.address_line2 && <span className="mt-1 block text-[12px] text-white/65">{prediction.address_line2}</span>}
-              </li>
-            ))}
-          </ul>
-          {message && <p role="status" className="px-4 py-3 text-[13px] leading-5 text-white/70">{message}</p>}
-          <div className="shrink-0 border-t border-white/10 px-4 py-2 text-right">
-            <span className="text-[11px] leading-4 text-white/65">
-              Powered by <a href="https://www.geoapify.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Geoapify</a>
-              {" · "}© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">OpenStreetMap</a> contributors
-              {" · "}Airports: <a href="https://ourairports.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">OurAirports</a>
-            </span>
-          </div>
-        </div>,
-        document.body,
-      )}
+      {open &&
+        position.width > 0 &&
+        createPortal(
+          <div
+            ref={popupRef}
+            onBlur={(event) => {
+              if (
+                event.relatedTarget instanceof Node &&
+                (event.currentTarget.contains(event.relatedTarget) ||
+                  event.relatedTarget === inputRef.current)
+              )
+                return;
+              ++requestId.current;
+              setFocused(false);
+              setOpen(false);
+            }}
+            data-lenis-prevent
+            className="fixed z-[1000] flex flex-col overflow-hidden rounded-md border border-[#d4bf94]/30 bg-[#151515] text-white shadow-2xl"
+            style={{
+              left: position.left,
+              top: position.top,
+              width: position.width,
+              maxHeight: position.height,
+              transform: position.above ? "translateY(-100%)" : undefined,
+            }}
+            onPointerDown={(event) => {
+              if (!(event.target as HTMLElement).closest("a"))
+                event.preventDefault();
+            }}
+          >
+            <ul
+              id={listId}
+              ref={listRef}
+              role="listbox"
+              aria-label="Suggested locations"
+              className="m-0 min-h-0 list-none overflow-y-auto overscroll-contain p-1"
+            >
+              {predictions.map((prediction, index) => (
+                <li
+                  key={prediction.place_id || prediction.formatted}
+                  id={`${listId}-${index}`}
+                  role="option"
+                  aria-selected={index === active}
+                  onClick={() => choose(prediction)}
+                  className={`cursor-pointer rounded px-3 py-3 text-[14px] leading-5 hover:bg-white/10 ${index === active ? "bg-white/10" : ""}`}
+                >
+                  <span className="block font-medium text-[#e0c99b]">
+                    {prediction.address_line1 ||
+                      prediction.name ||
+                      prediction.formatted}
+                  </span>
+                  {prediction.address_line2 && (
+                    <span className="mt-1 block text-[12px] text-white/65">
+                      {prediction.address_line2}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {message && (
+              <p
+                role="status"
+                className="px-4 py-3 text-[13px] leading-5 text-white/70"
+              >
+                {message}
+              </p>
+            )}
+            <div className="shrink-0 border-t border-white/10 px-4 py-2 text-right">
+              <span className="text-[11px] leading-4 text-white/65">
+                Powered by{" "}
+                <a
+                  href="https://www.geoapify.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-white"
+                >
+                  Geoapify
+                </a>
+                {" · "}©{" "}
+                <a
+                  href="https://www.openstreetmap.org/copyright"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-white"
+                >
+                  OpenStreetMap
+                </a>{" "}
+                contributors
+                {" · "}Airports:{" "}
+                <a
+                  href="https://ourairports.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-white"
+                >
+                  OurAirports
+                </a>
+              </span>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
-
 function Arrow({ back = false }: { back?: boolean }) {
   return (
     <svg
@@ -368,11 +493,12 @@ function Arrow({ back = false }: { back?: boolean }) {
     </svg>
   );
 }
-
 export default function BookingSection({
   endpoint = "/api/booking",
+  imageSrc = "/final.jpg",
 }: {
   endpoint?: string;
+  imageSrc?: string;
 }) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -380,7 +506,6 @@ export default function BookingSection({
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-
   const formRef = useRef<HTMLFormElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const submissionLock = useRef(false);
@@ -398,40 +523,50 @@ export default function BookingSection({
     duration: reduceMotion ? 0 : sectionInView ? 1.1 : 0.45,
     ease,
   };
-
-
   const current = steps[step];
   const lastStep = step === steps.length - 1;
-
   function update(field: keyof BookingValues, value: string) {
     setValues((previous) => ({ ...previous, [field]: value }));
     setError("");
   }
-
   function navigate(nextStep: number) {
-    if (submitting) return;
-
+    if (submitting || nextStep < 0 || nextStep >= steps.length) return;
     setDirection(nextStep > step ? 1 : -1);
     setStep(nextStep);
     setError("");
   }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     if (!formRef.current?.reportValidity()) return;
-
     if (!lastStep) {
       navigate(step + 1);
       return;
     }
-
+    const invalidStep = !values.traveler.trim()
+      ? 0
+      : !values.pickup.trim() ||
+          !values.dropoff.trim() ||
+          !values.date ||
+          !values.time
+        ? 1
+        : !values.purpose
+          ? 2
+          : !values.contactName.trim() ||
+              !values.phone.trim() ||
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())
+            ? 5
+            : -1;
+    if (invalidStep !== -1) {
+      navigate(invalidStep);
+      setError(
+        "Please complete the required details in this step before sending your request.",
+      );
+      return;
+    }
     if (submissionLock.current) return;
-
     submissionLock.current = true;
     setSubmitting(true);
     setError("");
-
     try {
       const response = await fetch(endpoint, {
         method: "POST",
@@ -440,15 +575,13 @@ export default function BookingSection({
         },
         body: JSON.stringify(values),
       });
-
       if (!response.ok) {
         throw new Error("Unable to submit request.");
       }
-
       setSubmitted(true);
     } catch {
       setError(
-        "We couldn’t send your request. Your details are still here—please try again."
+        "We couldn’t send your request. Your details are still here—please try again.",
       );
     } finally {
       submissionLock.current = false;
@@ -456,7 +589,6 @@ export default function BookingSection({
     }
   }
   const successRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!submitted) return;
     const frame = requestAnimationFrame(() => {
@@ -511,80 +643,129 @@ export default function BookingSection({
       ],
     },
   ];
-
   return (
     <section
       ref={sectionRef}
       id="contact"
       aria-labelledby="booking-section-heading"
-      className="relative isolate overflow-hidden bg-black px-6 py-20 text-white md:px-[72px] md:py-28"
+      className="relative isolate bg-black px-6 py-16 text-white md:px-[72px] md:py-24"
+      style={{ clipPath: "inset(0)" }}
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse at 0% 20%, rgba(255,255,255,0.05), transparent 60%)",
-        }}
+        className={`pointer-events-none inset-0 -z-10 ${reduceMotion ? "absolute" : "fixed"}`}
+      >
+        <Image
+          src={imageSrc}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-black/70"
       />
-
-      <div className="mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-black/40 via-black/10 to-black/30"
+      />
+      <div className="mx-auto grid max-w-[1280px] items-start gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
         {/* Section introduction */}
         <motion.div
-          className="lg:pt-10"
+          className="min-w-0"
           initial={false}
-          animate={{ opacity: sectionVisible ? 1 : 0, x: sectionVisible ? 0 : -90 }}
+          animate={{
+            opacity: sectionVisible ? 1 : 0,
+            x: sectionVisible ? 0 : -90,
+          }}
           transition={entranceTransition}
         >
-          <p className="mb-6 text-xs font-medium uppercase tracking-[0.24em] text-white/55">
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.24em] text-[#dfbf64]">
             Your Journey, Personally Arranged
           </p>
-
           <h2
             id="booking-section-heading"
-            className="max-w-[480px] text-4xl font-medium leading-[1.15] tracking-[-0.035em] md:text-5xl"
+            className="max-w-[480px] text-3xl font-medium leading-[1.15] tracking-[-0.035em] md:text-4xl"
           >
             Every journey begins with a conversation.
           </h2>
-
-          <div
-            aria-hidden="true"
-            className="my-8 h-px w-16 bg-[#c9a227]/70"
-          />
-
-          <p className="max-w-[400px] text-lg leading-8 text-white/65">
-          Tell us who you're moving and what matters to them, a Client Experience Lead will take it from there.
+          <p className="mt-5 max-w-[400px] text-base leading-7 text-white/75">
+            Tell us who you&apos;re moving and what matters to them. A Client
+            Experience Lead will take it from there.
           </p>
-
+          {!submitted && (
+            <nav
+              aria-label="Booking steps"
+              className="mt-7 grid grid-cols-2 gap-2 lg:grid-cols-1"
+            >
+              {steps.map((item, index) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  disabled={submitting}
+                  aria-current={step === index ? "step" : undefined}
+                  aria-controls="booking-form-panel"
+                  onClick={() => {
+                    navigate(index);
+                    if (window.matchMedia("(max-width: 1023px)").matches) {
+                      document
+                        .getElementById("booking-form-panel")
+                        ?.scrollIntoView({
+                          behavior: reduceMotion ? "auto" : "smooth",
+                          block: "start",
+                        });
+                    }
+                  }}
+                  className={`booking-step booking-shine flex min-h-[52px] w-full items-center gap-3 border px-4 py-3 text-left text-xs font-medium uppercase tracking-[0.08em] sm:text-sm ${step === index ? "is-active" : ""}`}
+                >
+                  <span className="text-[11px] tabular-nums opacity-60">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="flex-1">{item.label}</span>
+                  <span
+                    aria-hidden="true"
+                    className={step === index ? "opacity-100" : "opacity-30"}
+                  >
+                    →
+                  </span>
+                </button>
+              ))}
+            </nav>
+          )}
           <p className="mt-7 max-w-[380px] text-sm leading-7 text-white/45">
-  Prefer to speak with someone? Call{" "}
-  <a
-    href="tel:+18884129150"
-    className="text-[#dfbf64] underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
-  >
-    +1-888-412-9150
-  </a>
-  . Available 24 hours a day.
-</p>
+            Prefer to speak with someone? Call{" "}
+            <a
+              href="tel:+18884129150"
+              className="text-[#dfbf64] underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
+            >
+              +1-888-412-9150
+            </a>
+            . Available 24 hours a day.
+          </p>
         </motion.div>
-
         {/* Form panel */}
         <motion.div
-          className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.025] p-6 sm:p-9 md:p-10"
+          id="booking-form-panel"
+          className="scroll-mt-28 min-w-0 rounded-sm border border-white/15 bg-black/40 p-5 backdrop-blur-sm sm:p-8"
           initial={false}
-          animate={{ opacity: sectionVisible ? 1 : 0, x: sectionVisible ? 0 : 90 }}
+          animate={{
+            opacity: sectionVisible ? 1 : 0,
+            x: sectionVisible ? 0 : 90,
+          }}
           transition={entranceTransition}
         >
           {submitted ? (
-          <motion.div
-          ref={successRef}
-          tabIndex={-1}
-          role="status"
-          className="flex min-h-[460px] flex-col items-start justify-center outline-none"
-          initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.7, ease }}
-        >
+            <motion.div
+              ref={successRef}
+              tabIndex={-1}
+              role="status"
+              className="flex min-h-[460px] flex-col items-start justify-center outline-none"
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.7, ease }}
+            >
               <div className="mb-8 flex size-16 items-center justify-center rounded-full border border-[#c9a227]/50 text-[#dfbf64]">
                 <svg
                   viewBox="0 0 24 24"
@@ -599,37 +780,32 @@ export default function BookingSection({
                   <path d="m5 12 4 4L19 6" />
                 </svg>
               </div>
-
               <p className="mb-4 text-xs uppercase tracking-[0.2em] text-[#dfbf64]">
                 Request Received
               </p>
-
               <h3 className="text-3xl font-medium leading-tight tracking-[-0.025em] sm:text-4xl">
                 We will be in touch shortly.
               </h3>
-
               <p className="mt-6 text-base leading-8 text-white/65">
-                Thank you, {values.contactName}. Our Client Experience Team
-                has received your request and will contact you using the
-                details you provided.
+                Thank you, {values.contactName}. Our Client Experience Team has
+                received your request and will contact you using the details you
+                provided.
               </p>
             </motion.div>
           ) : (
             <>
               {/* Progress */}
-              <div className="mb-10">
+              <div className="mb-7">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-white/55">
                     {current.label}
                   </p>
-
                   <span className="shrink-0 text-xs tabular-nums text-white/45">
                     {String(step + 1).padStart(2, "0")}
                     <span className="mx-2 text-white/25">/</span>
                     07
                   </span>
                 </div>
-
                 <div
                   role="progressbar"
                   aria-label="Booking request progress"
@@ -648,7 +824,6 @@ export default function BookingSection({
                   ))}
                 </div>
               </div>
-
               <form ref={formRef} onSubmit={handleSubmit}>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -673,21 +848,18 @@ export default function BookingSection({
                     <h3
                       ref={headingRef}
                       tabIndex={-1}
-                      className="text-3xl font-medium leading-tight tracking-[-0.025em] outline-none sm:text-4xl"
+                      className="text-2xl font-medium leading-tight tracking-[-0.025em] outline-none sm:text-3xl"
                     >
                       {current.title}
                     </h3>
-
-                    <p className="mt-4 text-base leading-7 text-white/60">
+                    <p className="mt-3 text-sm leading-6 text-white/70">
                       {current.description}
                     </p>
-
                     <fieldset
                       disabled={submitting}
-                      className="mt-8 min-w-0 space-y-6"
+                      className="mt-6 min-w-0 space-y-5"
                     >
                       <legend className="sr-only">{current.title}</legend>
-
                       {step === 0 && (
                         <div>
                           <label htmlFor="traveler" className={labelClass}>
@@ -705,7 +877,6 @@ export default function BookingSection({
                           />
                         </div>
                       )}
-
                       {step === 1 && (
                         <>
                           <div>
@@ -722,7 +893,6 @@ export default function BookingSection({
                               placeholder="Address, airport, hotel, or venue"
                             />
                           </div>
-
                           <div>
                             <label htmlFor="dropoff" className={labelClass}>
                               Drop-Off Location
@@ -737,7 +907,6 @@ export default function BookingSection({
                               placeholder="Where are we taking you?"
                             />
                           </div>
-
                           <div className="grid gap-6 sm:grid-cols-2">
                             <div className="min-w-0">
                               <label htmlFor="date" className={labelClass}>
@@ -753,7 +922,6 @@ export default function BookingSection({
                                 className={`${inputClass} min-w-0 [color-scheme:dark]`}
                               />
                             </div>
-
                             <div className="min-w-0">
                               <label htmlFor="time" className={labelClass}>
                                 Time
@@ -770,7 +938,6 @@ export default function BookingSection({
                               />
                             </div>
                           </div>
-
                           <p
                             id="booking-time-note"
                             className="text-xs leading-6 text-white/45"
@@ -779,7 +946,6 @@ export default function BookingSection({
                           </p>
                         </>
                       )}
-
                       {step === 2 && (
                         <div>
                           <label htmlFor="purpose" className={labelClass}>
@@ -808,7 +974,6 @@ export default function BookingSection({
                           </select>
                         </div>
                       )}
-
                       {step === 3 && (
                         <div>
                           <label htmlFor="success" className={labelClass}>
@@ -829,7 +994,6 @@ export default function BookingSection({
                           />
                         </div>
                       )}
-
                       {step === 4 && (
                         <div>
                           <label htmlFor="preferences" className={labelClass}>
@@ -852,7 +1016,6 @@ export default function BookingSection({
                           />
                         </div>
                       )}
-
                       {step === 5 && (
                         <>
                           <div>
@@ -873,7 +1036,6 @@ export default function BookingSection({
                               className={inputClass}
                             />
                           </div>
-
                           <div>
                             <label htmlFor="email" className={labelClass}>
                               Email
@@ -891,7 +1053,6 @@ export default function BookingSection({
                               className={inputClass}
                             />
                           </div>
-
                           <div>
                             <label htmlFor="phone" className={labelClass}>
                               Phone
@@ -911,7 +1072,6 @@ export default function BookingSection({
                           </div>
                         </>
                       )}
-
                       {step === 6 && (
                         <div className="divide-y divide-white/10 rounded-lg border border-white/15 px-5">
                           {reviewGroups.map((group) => (
@@ -929,7 +1089,6 @@ export default function BookingSection({
                                   Edit
                                 </button>
                               </div>
-
                               <dl className="space-y-3">
                                 {group.entries.map(([label, value]) => (
                                   <div key={label}>
@@ -949,7 +1108,6 @@ export default function BookingSection({
                     </fieldset>
                   </motion.div>
                 </AnimatePresence>
-
                 {error && (
                   <p
                     role="alert"
@@ -958,9 +1116,8 @@ export default function BookingSection({
                     {error}
                   </p>
                 )}
-
                 {/* Navigation */}
-                <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/15 pt-6">
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/15 pt-6">
                   <button
                     type="button"
                     onClick={() => navigate(step - 1)}
@@ -972,11 +1129,10 @@ export default function BookingSection({
                     <Arrow back />
                     Back
                   </button>
-
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex min-h-12 items-center justify-center gap-4 rounded-sm border border-[#c9a227]/70 px-5 py-3 text-sm font-medium text-[#dfbf64] transition-colors hover:bg-[#c9a227] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227] disabled:cursor-wait disabled:opacity-50"
+                    className="booking-submit booking-shine inline-flex min-h-12 items-center justify-center gap-4 rounded-sm px-5 py-3 text-sm font-medium disabled:cursor-wait disabled:opacity-50"
                   >
                     {submitting
                       ? "Sending your request…"
@@ -991,6 +1147,95 @@ export default function BookingSection({
           )}
         </motion.div>
       </div>
+      <style jsx>{`
+        .booking-shine {
+          position: relative;
+          isolation: isolate;
+          overflow: hidden;
+          transition:
+            background-color 300ms ease,
+            border-color 300ms ease,
+            color 300ms ease;
+        }
+        .booking-shine::before {
+          content: "";
+          position: absolute;
+          pointer-events: none;
+          z-index: -1;
+          top: 0;
+          bottom: 0;
+          left: -40%;
+          width: 30%;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.2) 8%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0.2) 92%,
+            transparent 100%
+          );
+          transform: translateX(0) skewX(-25deg);
+          transition: transform 400ms cubic-bezier(0.45, 0, 0.55, 1);
+        }
+        .booking-step {
+          background: rgba(255, 255, 255, 0.07);
+          border-color: rgba(255, 255, 255, 0.18);
+          color: rgba(255, 255, 255, 0.85);
+        }
+        .booking-step.is-active,
+        .booking-submit {
+          background: #806b43;
+          border-color: #a38d65;
+          color: #fff;
+        }
+          .booking-step {
+  transform: translateX(0);
+  transition:
+    transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 300ms ease,
+    border-color 300ms ease,
+    color 300ms ease;
+}
+
+.booking-step.is-active {
+  transform: translateX(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-step {
+    transform: none;
+    transition: none;
+  }
+}
+        .booking-shine:focus-visible {
+          outline: 2px solid #d5bc89;
+          outline-offset: 3px;
+        }
+        .booking-shine:focus-visible::before {
+          transform: translateX(500%) skewX(-25deg);
+        }
+        @media (hover: hover) {
+          .booking-shine:not(:disabled):hover {
+            background: #a38d65;
+            color: #080808;
+          }
+          .booking-shine:not(:disabled):hover::before {
+            transform: translateX(500%) skewX(-25deg);
+          }
+        }
+        .booking-step:disabled {
+          cursor: wait;
+          opacity: 0.5;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .booking-shine {
+            transition: none;
+          }
+          .booking-shine::before {
+            display: none;
+          }
+        }
+      `}</style>
     </section>
   );
 }
