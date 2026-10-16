@@ -16,7 +16,8 @@ const container =
   "mx-auto w-[calc(100%-48px)] max-w-[1280px] md:w-[calc(100%-96px)]";
 const heading =
   "font-normal tracking-[-0.035em] leading-[1.12] [font-family:var(--font-heading),Georgia,serif]";
-const body = "text-[15px] leading-[1.9] text-[#666159] md:text-base";
+  const body =
+  "text-[17px] leading-[1.85] text-[#666159] md:text-lg";
 const eyebrow =
   "text-[10px] font-medium uppercase leading-6 tracking-[0.22em] text-[#957e5e]";
 
@@ -268,7 +269,7 @@ export default function HotelMobility() {
             </h2>
           </Reveal>
           <Reveal direction="right" delay={0.1} className="md:pt-10">
-            <p className="text-base leading-[1.9] text-white/75 md:text-lg">
+          <p className="text-lg leading-[1.85] text-white/75 md:text-xl">
               Every month, our leadership sits down with your head of management
               and head of concierge. We bring a candid, detailed review of
               arrivals, notes, and adjustments. You tell us what to refine, so
