@@ -340,7 +340,7 @@ export default function ItSolutions({
 </h2>
 
           <p className="mx-auto mt-7 max-w-[780px] text-base leading-7 tracking-[-0.01em] opacity-75 [text-wrap:balance] md:mt-9 md:text-xl md:leading-8">
-          "The chosen mobility partner for institutions that cannot afford uncertainty."
+          The chosen mobility partner for institutions that cannot afford uncertainty.
 
           </p>
         </motion.div>

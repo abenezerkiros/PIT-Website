@@ -10,7 +10,7 @@ import GetAQuote from "@/components/GetAQuote";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import AboutUsCopy from "@/components/About copy";
-import Booking from "@/components/Booking";
+import Booking from "@/components/Booking copy";
 import GlobalStandard from "@/components/GlobalStandard";
 import ConversationSection from "@/components/ConversationSection";
 import PartnersSection from "@/components/PartnersSection";
@@ -34,7 +34,7 @@ export default function Home() {
 
 
 
-      <Booking imageSrc="/final.jpg" />
+      <Booking />
       <GetAQuote/>
       <Footer/>
     </main>
