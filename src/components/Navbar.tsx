@@ -21,6 +21,11 @@ const serviceLinks = [
     href: "/hotels",
     description: "Gracious mobility for distinguished hotels.",
   },
+  {
+    label: "Corporate Mobility",
+    href: "/corporate",
+    description: "Roadshows, conferences, and corporate events.",
+  },
 ];
 
 function ServicesMenu({
