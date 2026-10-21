@@ -6,10 +6,10 @@ import { motion, useReducedMotion } from "framer-motion";
 
 // Reuses the public site's existing image paths. Change only these to swap photos.
 const images = {
-  hero: "/hero.jpg",
-  chauffeur: "/white-glove.png",
-  coordination: "/Curated-trip.png",
-  fleet: "/Fleet.png",
+  hero: "/ExcecutivesHero.jpg",
+  chauffeur: "/ExecutivesChuffer.jpg",
+  coordination: "/Coordination.jpg",
+  fleet: "/ExcutiveFleet.jpg",
   closing: "/final.jpg",
 };
 const bookingUrl = "https://book.mylimobiz.com/v4/pittransportation";

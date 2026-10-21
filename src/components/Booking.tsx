@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import type { FormEvent } from "react";
-import Image from "next/image";
 import { createPortal } from "react-dom";
 import {
   AnimatePresence,
@@ -495,9 +494,9 @@ function Arrow({ back = false }: { back?: boolean }) {
 }
 export default function BookingSection({
   endpoint = "/api/booking",
-  imageSrc = "/final.jpg",
 }: {
   endpoint?: string;
+  /** Retained for existing callers; this design uses a solid background. */
   imageSrc?: string;
 }) {
   const [step, setStep] = useState(0);
@@ -648,57 +647,40 @@ export default function BookingSection({
       ref={sectionRef}
       id="contact"
       aria-labelledby="booking-section-heading"
-      className="relative isolate bg-black px-6 py-16 text-white md:px-[72px] md:py-24"
-      style={{ clipPath: "inset(0)" }}
+      className="relative isolate scroll-mt-24 overflow-x-clip border-y border-[#c5b58e] bg-[#eee7d8] px-6 py-16 text-[#20201d] md:px-[72px] md:py-24"
     >
       <div
         aria-hidden="true"
-        className={`pointer-events-none inset-0 -z-10 ${reduceMotion ? "absolute" : "fixed"}`}
-      >
-        <Image
-          src={imageSrc}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-      </div>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-black/70"
+        className="absolute inset-x-0 top-0 h-1 bg-[#957e5e]"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-black/40 via-black/10 to-black/30"
-      />
-      <div className="mx-auto grid max-w-[1280px] items-start gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
+      <div className="mx-auto grid max-w-[1280px] items-start gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         {/* Section introduction */}
         <motion.div
           className="min-w-0"
           initial={false}
           animate={{
-            opacity: sectionVisible ? 1 : 0,
-            x: sectionVisible ? 0 : -90,
+            opacity: 1,
+            y: reduceMotion || sectionVisible ? 0 : 24,
           }}
           transition={entranceTransition}
         >
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.24em] text-[#dfbf64]">
-            Your Journey, Personally Arranged
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.24em] text-[#806b43]">
+            Book your journey
           </p>
           <h2
             id="booking-section-heading"
-            className="max-w-[480px] text-3xl font-medium leading-[1.15] tracking-[-0.035em] md:text-4xl"
+            className="max-w-[540px] text-[clamp(36px,4vw,58px)] font-normal leading-[1.08] tracking-[-0.04em]"
           >
             Every journey begins with a conversation.
           </h2>
-          <p className="mt-5 max-w-[400px] text-base leading-7 text-white/75">
+          <p className="mt-5 max-w-[400px] text-base leading-7 text-[#625b4e]">
             Tell us who you&apos;re moving and what matters to them. A Client
             Experience Lead will take it from there.
           </p>
           {!submitted && (
             <nav
               aria-label="Booking steps"
-              className="mt-7 grid grid-cols-2 gap-2 lg:grid-cols-1"
+              className="mt-9 hidden gap-2 pr-3 lg:grid lg:grid-cols-1"
             >
               {steps.map((item, index) => (
                 <button
@@ -734,11 +716,11 @@ export default function BookingSection({
               ))}
             </nav>
           )}
-          <p className="mt-7 max-w-[380px] text-sm leading-7 text-white/45">
+          <p className="mt-7 max-w-[380px] text-sm leading-7 text-[#625b4e]">
             Prefer to speak with someone? Call{" "}
             <a
               href="tel:+18884129150"
-              className="text-[#dfbf64] underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
+              className="text-[#806b43] underline underline-offset-4 transition-colors hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c9a227]"
             >
               +1-888-412-9150
             </a>
@@ -748,11 +730,11 @@ export default function BookingSection({
         {/* Form panel */}
         <motion.div
           id="booking-form-panel"
-          className="scroll-mt-28 min-w-0 rounded-sm border border-white/15 bg-black/40 p-5 backdrop-blur-sm sm:p-8"
+          className="scroll-mt-28 min-w-0 rounded-xl border border-[#bba77d]/50 border-t-4 border-t-[#bba77d] bg-[#111310] p-6 text-white shadow-[0_24px_70px_-24px_rgba(43,35,19,0.35)] sm:p-9 lg:p-10"
           initial={false}
           animate={{
-            opacity: sectionVisible ? 1 : 0,
-            x: sectionVisible ? 0 : 90,
+            opacity: 1,
+            y: reduceMotion || sectionVisible ? 0 : 32,
           }}
           transition={entranceTransition}
         >
@@ -794,6 +776,35 @@ export default function BookingSection({
             </motion.div>
           ) : (
             <>
+              <div className="mb-7 border-b border-white/15 pb-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#dfbf82]">
+                  Your personal journey request
+                </p>
+                <p className="mt-2 text-sm leading-6 text-white/65">
+                  Share the details. Our team will take care of what comes next.
+                </p>
+                <div className="mt-5 lg:hidden">
+                  <label
+                    htmlFor="booking-step-select"
+                    className="mb-2 block text-xs text-white/70"
+                  >
+                    Choose a step
+                  </label>
+                  <select
+                    id="booking-step-select"
+                    value={step}
+                    disabled={submitting}
+                    onChange={(event) => navigate(Number(event.target.value))}
+                    className="min-h-12 w-full rounded-md border border-[#bba77d]/60 bg-[#20231e] px-3 text-base text-white outline-none focus:border-[#dfbf82]"
+                  >
+                    {steps.map((item, index) => (
+                      <option key={item.label} value={index}>
+                        {index + 1}. {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               {/* Progress */}
               <div className="mb-7">
                 <div className="mb-4 flex items-center justify-between gap-4">
@@ -1132,7 +1143,7 @@ export default function BookingSection({
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="booking-submit booking-shine inline-flex min-h-12 items-center justify-center gap-4 rounded-sm px-5 py-3 text-sm font-medium disabled:cursor-wait disabled:opacity-50"
+                    className="booking-submit booking-shine inline-flex min-h-14 flex-1 items-center justify-center gap-4 rounded-sm px-6 py-4 text-sm font-semibold disabled:cursor-wait disabled:opacity-50"
                   >
                     {submitting
                       ? "Sending your request…"
@@ -1178,35 +1189,40 @@ export default function BookingSection({
           transition: transform 400ms cubic-bezier(0.45, 0, 0.55, 1);
         }
         .booking-step {
-          background: rgba(255, 255, 255, 0.07);
-          border-color: rgba(255, 255, 255, 0.18);
-          color: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.35);
+          border-color: #c9bfae;
+          color: #494336;
         }
-        .booking-step.is-active,
-        .booking-submit {
+        .booking-step.is-active {
           background: #806b43;
           border-color: #a38d65;
           color: #fff;
         }
-          .booking-step {
-  transform: translateX(0);
-  transition:
-    transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 300ms ease,
-    border-color 300ms ease,
-    color 300ms ease;
-}
+        .booking-submit {
+          background: #bba273;
+          color: #14150f;
+          border: 1px solid #d1bc96;
+        }
+        .booking-step {
+          transform: translateX(0);
+          transition:
+            transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
+            background-color 300ms ease,
+            border-color 300ms ease,
+            color 300ms ease;
+        }
 
-.booking-step.is-active {
-  transform: translateX(12px);
-}
+        .booking-step.is-active {
+          transform: translateX(12px);
+        }
 
-@media (prefers-reduced-motion: reduce) {
-  .booking-step {
-    transform: none;
-    transition: none;
-  }
-}
+        @media (prefers-reduced-motion: reduce) {
+          .booking-step,
+          .booking-step.is-active {
+            transform: none;
+            transition: none;
+          }
+        }
         .booking-shine:focus-visible {
           outline: 2px solid #d5bc89;
           outline-offset: 3px;

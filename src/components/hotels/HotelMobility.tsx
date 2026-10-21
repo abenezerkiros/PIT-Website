@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 
 // Existing public-site assets. Swap these for hotel photography when ready.
 const images = {
-  arrival: "/hero.jpg",
+  arrival: "/hero.png",
   welcome: "/white-glove.png",
   journey: "/Curated-trip.png",
   closing: "/final.jpg",

@@ -26,6 +26,16 @@ const serviceLinks = [
     href: "/corporate",
     description: "Roadshows, conferences, and corporate events.",
   },
+  {
+    label: "Events & Celebrations",
+    href: "/events",
+    description: "Thoughtful mobility for life’s defining days.",
+  },
+  {
+    label: "Diplomatic Mobility",
+    href: "/diplomatic",
+    description: "Discreet mobility for those who represent nations.",
+  },
 ];
 
 function ServicesMenu({

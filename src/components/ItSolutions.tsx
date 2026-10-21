@@ -332,15 +332,15 @@ export default function ItSolutions({
             transformOrigin: "50% 50%",
           }}
         >
-      <h2 className="text-[clamp(2.75rem,5.6vw,5.5rem)] font-medium leading-[1.08] tracking-[-0.045em]">
+      <h2 className="text-[clamp(2.75rem,5.6vw,6.5rem)] font-medium leading-[1.08] tracking-[-0.045em]">
   <span className="block xl:whitespace-nowrap">
-  WHEN THE STAKES ARE HIGHEST,  
+  When the stakes are highest, 
   </span>
-  <span className="block">ONLY PREMIER CAN BE TRUSTED.</span>
+  <span className="block">only premier can be trusted.</span>
 </h2>
 
           <p className="mx-auto mt-7 max-w-[780px] text-base leading-7 tracking-[-0.01em] opacity-75 [text-wrap:balance] md:mt-9 md:text-xl md:leading-8">
-          The chosen mobility partner for institutions that cannot afford uncertainty.
+          "The chosen mobility partner for institutions that cannot afford mistakes."
 
           </p>
         </motion.div>

@@ -75,8 +75,7 @@ export default function HeroSection() {
             delay: !reduceMotion && inView ? 0.25 : 0,
           }}
         >
-         World class chauffeured transportation arranged for your most important journeys.
-
+          World class chauffeured transportation for the world&apos;s most important journeys.
         </motion.h1>
 
         <motion.div
