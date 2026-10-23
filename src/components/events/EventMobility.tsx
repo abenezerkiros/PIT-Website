@@ -6,10 +6,13 @@ import { motion, useReducedMotion } from "framer-motion";
 
 // Existing public-site assets. Swap these for licensed event photography when ready.
 const images = {
-  arrival: "/hero.jpg",
-  welcome: "/white-glove.png",
-  journey: "/Curated-trip.png",
-  closing: "/final.jpg",
+  gala:"/gala.jpg",
+  arrival: "/Wedding-Hero.jpg",
+  celebrations:"/celebrations.jpg",
+  welcome: "/Events-Agent.jpg",
+  couple:"/Event-Wedding.jpg",
+  journey: "/EventCoordinator.jpg",
+  closing: "/Events-Closing.JPG",
 };
 const ease = [0.22, 1, 0.36, 1] as const;
 const container =
@@ -192,7 +195,7 @@ function FixedPhoto({
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/65" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/10" />
       </div>
       {children}
     </div>
@@ -237,20 +240,20 @@ export default function EventMobility() {
         <div className="mx-auto grid w-[calc(100%-32px)] max-w-[1520px] grid-cols-[0.7fr_1.6fr] items-center gap-3 md:w-[calc(100%-64px)] md:grid-cols-[0.8fr_1.5fr_0.8fr] md:gap-6">
           <Reveal direction="left">
             <Photo
-              src={images.welcome}
+              src={images.gala}
               priority
               className="h-[190px] md:h-[330px] lg:h-[410px]"
             />
           </Reveal>
           <Reveal delay={0.12}>
-            <Photo
-              src={images.arrival}
-              priority
-              className="h-[270px] md:h-[420px] lg:h-[510px]"
-            />
-          </Reveal>
+  <Photo
+    src={images.arrival}
+    priority
+    className="h-[350px] md:h-[480px] lg:h-[580px] object-contain"
+  />
+</Reveal>
           <Reveal direction="right" delay={0.2} className="hidden md:block">
-            <Photo src={images.journey} className="h-[330px] lg:h-[410px]" />
+            <Photo src={images.celebrations} className="h-[330px] lg:h-[410px]" />
           </Reveal>
         </div>
         <p className="mt-7 text-center text-[11px] uppercase tracking-[0.22em] text-[#8a7350]">
@@ -403,7 +406,7 @@ export default function EventMobility() {
             <p className={`${body} mt-7`}>{details.live.text}</p>
           </Reveal>
           <Reveal direction="right">
-            <Photo src={images.arrival} className="aspect-[4/3]" />
+            <Photo src={images.couple} className="aspect-[4/3]" />
           </Reveal>
         </div>
       </section>

@@ -407,7 +407,7 @@ export default function ExecutiveMobility() {
                 alt="A journey prepared by Premier"
                 fill
                 sizes="(max-width: 800px) 100vw, 40vw"
-                className={"object-cover object-center"}
+                className={"object-cover object-left"}
               />
             </div>
             <div

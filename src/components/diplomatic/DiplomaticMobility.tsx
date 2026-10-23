@@ -6,10 +6,10 @@ import { motion, useReducedMotion } from "framer-motion";
 
 // Existing public-site assets. Swap these for approved diplomatic-service photography when ready.
 const images = {
-  arrival: "/hero.jpg",
-  welcome: "/white-glove.png",
-  journey: "/Curated-trip.png",
-  closing: "/final.jpg",
+  arrival: "/Diplomat-Hero.jpg",
+  welcome: "/Diplomat-Detail.jpg",
+  journey: "/Chuffer-Live.jpg",
+  closing: "/Diplomat-Final.jpg",
 };
 const ease = [0.22, 1, 0.36, 1] as const;
 const container =
@@ -132,7 +132,7 @@ function FixedPhoto({ children, src }: { children: ReactNode; src: string }) {
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/5" />
       </div>
       {children}
     </div>
@@ -159,7 +159,7 @@ export default function DiplomaticMobility() {
             className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-black/65" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#131512] via-black/15 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#131512] via-black/10 to-black/20" />
         </div>
         <div
           className={`${container} flex min-h-[620px] flex-col justify-between py-8 md:min-h-[710px] md:py-10`}

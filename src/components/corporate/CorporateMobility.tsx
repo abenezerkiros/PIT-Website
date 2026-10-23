@@ -6,10 +6,10 @@ import { motion, useReducedMotion } from "framer-motion";
 
 // Existing public-site assets. Swap these for corporate photography when ready.
 const images = {
-  arrival: "/hero.jpg",
-  welcome: "/white-glove.png",
-  journey: "/Curated-trip.png",
-  closing: "/final.jpg",
+  arrival: "/Corporate-Hero.jpg",
+  welcome: "/Corporate-coordinator.jpg",
+  journey: "/Corporate.JPG",
+  closing: "/Corporate-final.jpg",
 };
 const ease = [0.22, 1, 0.36, 1] as const;
 const container =
@@ -179,18 +179,18 @@ export default function CorporateMobilityOptionTwo() {
         aria-labelledby="corporate-heading"
         className="relative isolate overflow-hidden bg-black text-white"
       >
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src={images.arrival}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
-        </div>
+ <div className="absolute inset-0 -z-10">
+  <Image
+    src={images.arrival}
+    alt=""
+    fill
+    priority
+    sizes="100vw"
+    className="object-cover object-center -scale-x-100"
+  />
+  <div className="absolute inset-0 bg-black/40" />
+  <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+</div>
         <div
           className={`${container} flex min-h-[600px] flex-col justify-between py-8 md:min-h-[680px] md:py-10`}
         >

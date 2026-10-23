@@ -7,9 +7,9 @@ import { motion, useReducedMotion } from "framer-motion";
 // Existing public-site assets. Swap these for hotel photography when ready.
 const images = {
   arrival: "/hero.png",
-  welcome: "/white-glove.png",
-  journey: "/Curated-trip.png",
-  closing: "/final.jpg",
+  welcome: "/Hotel-Arrival.jpg",
+  journey: "/Hotel-Lobby.jpg",
+  closing: "/Hotel-Closing.jpg",
 };
 const ease = [0.22, 1, 0.36, 1] as const;
 const container =
