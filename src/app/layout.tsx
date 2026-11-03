@@ -19,7 +19,7 @@ const fragmentGlare = localFont({
 export const metadata: Metadata = {
   title: "Luxury Chauffeur Services | District of Columbia",
   description:
-    "Experience Washington in comfort, style & professional elegance.",
+    "World class chauffeured transportation for the world's most important journeys.",
   verification: {
     google: "0BymdbqSeGKrj8pnYAuxMcXnZnNIEh-8UeO55GZZh2c",
   },

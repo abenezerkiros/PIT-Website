@@ -716,7 +716,7 @@ export default function BookingSection({
               ))}
             </nav>
           )}
-          <p className="mt-7 max-w-[380px] text-sm leading-7 text-[#625b4e]">
+          <p className="mt-7 max-w-[380px] text-sm leading-7 text-[#625b4e]" data-nosnippet>
             Prefer to speak with someone? Call{" "}
             <a
               href="tel:+18884129150"
