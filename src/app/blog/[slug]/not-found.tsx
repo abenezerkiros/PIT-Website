@@ -1,0 +1,1 @@
+export default function MissingArticle(){return <main style={{padding:"80px 24px",textAlign:"center",background:"#f7f5ef",color:"#252720"}}><h1>This article is not available.</h1><p><a href="/blog">Explore the Premier Journal</a></p></main>;}
