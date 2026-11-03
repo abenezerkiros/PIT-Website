@@ -9,6 +9,16 @@ const nextConfig = {
       },
     ],
   },
+
+  async redirects() {
+    return [
+      {
+        source: "/services",
+        destination: "/#services",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
