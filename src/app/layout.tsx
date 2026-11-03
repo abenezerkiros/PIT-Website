@@ -3,11 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import WhatsAppButton from "@/components/WhatsAppButton";
+
 const geist = localFont({
   src: "../../public/fonts/Geist.ttf",
   variable: "--font-body",
   display: "swap",
-  
 });
 
 const fragmentGlare = localFont({
@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "Luxury Chauffeur Services | District of Columbia",
   description:
     "Experience Washington in comfort, style & professional elegance.",
+  verification: {
+    google: "0BymdbqSeGKrj8pnYAuxMcXnZnNIEh-8UeO55GZZh2c",
+  },
 };
 
 export default function RootLayout({
