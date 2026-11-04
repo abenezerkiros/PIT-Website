@@ -16,7 +16,7 @@ const pillars = [
     title: "Our Client Experience Team, Always At Your Service",
     description:
       "Whatever the hour, wherever you are, a Client Experience Lead is available to listen and document every detail with meticulous care. That record becomes the brief for your next journey, so you never repeat yourself.",
-      src:"/conversation.png"
+      src:"/conversation.jpg"
   },
   {
     icon: "Curated Journeys",
