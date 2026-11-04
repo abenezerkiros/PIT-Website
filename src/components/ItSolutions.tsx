@@ -16,28 +16,28 @@ const pillars = [
     title: "Our Client Experience Team, Always At Your Service",
     description:
       "Whatever the hour, wherever you are, a Client Experience Lead is available to listen and document every detail with meticulous care. That record becomes the brief for your next journey, so you never repeat yourself.",
-      src:"/conversation.jpg"
+      src:"/conversation.png"
   },
   {
     icon: "Curated Journeys",
     title: "Your Journey, Curated with Intelligence",
     description:
       "Before you arrive, your chauffeur is briefed on your preferences—the water you prefer, the temperature you set, the silence you welcome. You step in, and everything is just right.",
-      src:"/AboutSection.jpg"
+      src:"/interior.webp"
   },
   {
     icon: "Black Glove Chauffeur Service. ",
     title: "Your Chauffeur, assigned with Intention",
     description:
       "We assign the chauffeur whose character fits your principal and whose strengths fit the assignment. Fully licensed, background-checked, and insured. You are never handed to a stranger.",
-            src:"/black-glove.jpg"
+            src:"/blackGlove.png"
   },
   {
     icon: "The Industry’s Latest Fleet.",
     title: "Vehicles that ensure you arrive like no other",
     description:
       "From one executive to a full delegation. Sedans, SUVs, Sprinters, coaches—European and American, every class in between. Whatever the journey calls for, we have the vehicle.",
-            src:"/footer.jpg"
+            src:"/fleet.webp"
   },
 ] as const;
 
