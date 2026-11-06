@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import WhatsAppButton from "@/components/WhatsAppButton";
-
+import { GoogleAnalytics } from "@next/third-parties/google";
 const geist = localFont({
   src: "../../public/fonts/Geist.ttf",
   variable: "--font-body",
@@ -36,6 +36,7 @@ export default function RootLayout({
         <SmoothScroll>{children}</SmoothScroll>
         <WhatsAppButton />
       </body>
+      <GoogleAnalytics gaId="G-15HQWPC4H4" />
     </html>
   );
 }
