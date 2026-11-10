@@ -36,6 +36,16 @@ const serviceLinks = [
     href: "/diplomatic",
     description: "Discreet mobility for those who represent nations.",
   },
+  {
+    label: "Landing page 1",
+    href: "/landing-page-1",
+    description: "First option of laniding.",
+  },
+  {
+    label: "Landing page 2",
+    href: "/landing-page-2",
+    description: "Second option of laniding.",
+  },
 ];
 
 function ServicesMenu({
