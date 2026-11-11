@@ -19,7 +19,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function ConversationSection({
   imageSrc,
-  contactHref = "/contact",
+  contactHref = "/#contact",
 }: ConversationSectionProps) {
   const introRef = useRef<HTMLDivElement>(null);
   const boxSectionRef = useRef<HTMLDivElement>(null);

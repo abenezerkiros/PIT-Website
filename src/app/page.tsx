@@ -25,7 +25,7 @@ export default function Home() {
       <GlobalStandard imageSrc="/globe-image.png" />
       <ConversationSection
   imageSrc="/capital-hill.jpg"
-  contactHref="/contact"
+  contactHref="/#contact"
 />
       <Fleet />
       <PartnersSection/>

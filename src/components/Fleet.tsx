@@ -571,7 +571,7 @@ function VehicleSlider({ items }: { items: Vehicle[] }) {
 }
 
 export default function Fleet({
-  contactHref = "/contact",
+  contactHref = "/#contact",
 }: {
   contactHref?: string;
 }) {

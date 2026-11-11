@@ -231,7 +231,7 @@ function PillarsCarousel({ contactHref }: { contactHref: string }) {
 }
 
 export default function ItSolutions({
-  contactHref = "/contact",
+  contactHref = "/#contact",
 }: {
   contactHref?: string;
 }) {
