@@ -14,9 +14,11 @@ import Booking from "@/components/Booking copy";
 import GlobalStandard from "@/components/GlobalStandard";
 import ConversationSection from "@/components/ConversationSection";
 import PartnersSection from "@/components/PartnersSection";
+import { WebsiteStructuredData } from "@/components/StructuredData";
 export default function Home() {
   return (
     <main>
+          <WebsiteStructuredData />
       <Navbar/>
       <HeroSection />
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { BusinessStructuredData } from "@/components/StructuredData";
 const geist = localFont({
   src: "../../public/fonts/Geist.ttf",
   variable: "--font-body",
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
   verification: {
     google: "0BymdbqSeGKrj8pnYAuxMcXnZnNIEh-8UeO55GZZh2c",
   },
+  metadataBase: new URL("https://www.pitdrives.com"),
 };
 
 export default function RootLayout({
@@ -33,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geist.variable} ${fragmentGlare.variable}`}>
+      <BusinessStructuredData />
         <SmoothScroll>{children}</SmoothScroll>
         <WhatsAppButton />
       </body>

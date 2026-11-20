@@ -37,6 +37,13 @@ const socialLinks = [
     icon: "yelp",
   },
 ] as const;
+const serviceLinks = [
+  { label: "Executive Mobility", href: "/executives" },
+  { label: "Hotel Partnerships", href: "/hotels" },
+  { label: "Corporate Mobility", href: "/corporate" },
+  { label: "Events & Celebrations", href: "/events" },
+  { label: "Diplomatic Mobility", href: "/diplomatic" },
+];
 
 type SocialIconName = (typeof socialLinks)[number]["icon"];
 
@@ -111,14 +118,14 @@ export default function Footer() {
     <footer className="w-full overflow-hidden bg-black px-6 pt-12 text-white md:px-[72px] md:pt-16">
       <div className="mx-auto w-full max-w-[1440px]">
         <motion.div
-          className="grid grid-cols-1 gap-10 pb-12 sm:grid-cols-2 sm:gap-12 md:pb-16 lg:grid-cols-[1fr_1.2fr_0.8fr] lg:gap-16"
+          className="grid grid-cols-1 gap-10 pb-12 sm:grid-cols-2 sm:gap-12 md:pb-16 xl:grid-cols-[0.9fr_1fr_1.3fr_0.8fr] xl:gap-10"
           initial={reduceMotion ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: reduceMotion ? 0 : 0.8, ease }}
         >
           {/* Logo */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div>
             <a
               href="#top"
               aria-label="Premier International Transportation — back to top"
@@ -133,7 +140,30 @@ export default function Footer() {
               />
             </a>
           </div>
+          {/* Service links — always rendered */}
+<nav aria-label="Footer services">
+  <h2
+    className="mb-6 text-[12px] font-medium uppercase tracking-[0.2em] text-[#b7a071]"
+    style={{
+      fontFamily: "var(--font-body), Arial, sans-serif",
+    }}
+  >
+    Our services
+  </h2>
 
+  <ul className="flex flex-col items-start gap-2">
+    {serviceLinks.map((service) => (
+      <li key={service.href}>
+        <a
+          href={service.href}
+          className={`inline-block py-1 text-[15px] leading-6 text-white/70 ${linkClass}`}
+        >
+          {service.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
           {/* Contact details */}
           <div>
             <h2
@@ -257,7 +287,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-white/15 py-6 pl-2 pr-16 md:py-7 md:pl-0 md:pr-0">
           <p className="text-center text-[12px] leading-6 text-white/45 sm:text-[13px]">
-            Copyright &copy; {new Date().getFullYear()} Premier
+            Copyright &copy; {new Date().getFullYear()} Premier International
             Transportation
             <span className="mx-2 text-white/25">|</span>
             All Rights Reserved

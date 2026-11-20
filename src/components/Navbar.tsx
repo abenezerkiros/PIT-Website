@@ -122,36 +122,39 @@ function ServicesMenu({
           <path d="m6 9 6 6 6-6" />
         </svg>
       </button>
-      {open && (
-        <div
-          id={panelId}
-          className={
-            mobile
-              ? "mb-3 ml-2 border-l border-[#b7a071]/40 pl-3"
-              : "absolute left-0 top-full z-50 w-[300px] rounded-sm border border-[#b7a071]/25 bg-[#111210] p-2 shadow-[0_16px_40px_rgba(0,0,0,0.4)]"
-          }
-        >
-          {serviceLinks.map((service) => (
-            <a
-              key={service.href}
-              href={service.href}
-              onClick={() => {
-                toggle(false);
-                onNavigate();
-              }}
-              className="group block rounded-sm px-4 py-3 transition-colors hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c9a227]"
-            >
-              <span className="flex items-center justify-between gap-4 text-[15px] font-medium text-[#d5bc89] group-hover:text-white">
-                {service.label}
-                <span aria-hidden="true">↗</span>
-              </span>
-              <span className="mt-1 block text-xs leading-5 text-white/55">
-                {service.description}
-              </span>
-            </a>
-          ))}
-        </div>
-      )}
+
+
+<div
+  id={panelId}
+  hidden={!open}
+  className={
+    mobile
+      ? "mb-3 ml-2 border-l border-[#b7a071]/40 pl-3"
+      : "absolute left-0 top-full z-50 w-[300px] rounded-sm border border-[#b7a071]/25 bg-[#111210] p-2 shadow-[0_16px_40px_rgba(0,0,0,0.4)]"
+  }
+>
+  {serviceLinks.map((service) => (
+    <a
+      key={service.href}
+      href={service.href}
+      onClick={() => {
+        toggle(false);
+        onNavigate();
+      }}
+      className="group block rounded-sm px-4 py-3 transition-colors hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c9a227]"
+    >
+      <span className="flex items-center justify-between gap-4 text-[15px] font-medium text-[#d5bc89] group-hover:text-white">
+        {service.label}
+        <span aria-hidden="true">↗</span>
+      </span>
+
+      <span className="mt-1 block text-xs leading-5 text-white/55">
+        {service.description}
+      </span>
+    </a>
+  ))}
+</div>
+  
     </div>
   );
 }
