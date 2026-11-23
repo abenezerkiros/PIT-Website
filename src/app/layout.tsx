@@ -1,18 +1,35 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Fraunces } from "next/font/google";
+import { DM_Serif_Display } from "next/font/google";
 import "./globals.css";
+
 import SmoothScroll from "@/components/SmoothScroll";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { BusinessStructuredData } from "@/components/StructuredData";
+
 const geist = localFont({
   src: "../../public/fonts/Geist.ttf",
   variable: "--font-body",
   display: "swap",
 });
-
-const fragmentGlare = localFont({
-  src: "../../public/fonts/pp-fragment-glare.ttf",
+const syarifa = localFont({
+  src: "../../public/fonts/Syarifa.ttf",
+  variable: "--font-body",
+  display: "swap",
+});
+const dmSerifDisplay = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-heading",
+  display: "swap",
+});
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
   variable: "--font-heading",
   display: "swap",
 });
@@ -34,11 +51,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${geist.variable} ${fragmentGlare.variable}`}>
-      <BusinessStructuredData />
+<body className={`${geist.variable} ${fraunces.variable}`}>
+          <BusinessStructuredData />
         <SmoothScroll>{children}</SmoothScroll>
         <WhatsAppButton />
       </body>
+
       <GoogleAnalytics gaId="G-15HQWPC4H4" />
     </html>
   );
