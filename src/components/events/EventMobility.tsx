@@ -232,9 +232,17 @@ export default function EventMobility() {
               Effortless Mobility for{" "}
               <span className="text-[#8a7350]">Life’s Defining Days</span>
             </h1>
-            <div className="mt-8">
-              <ContactLink />
-            </div>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+  <ContactLink />
+
+  <a
+    href="/dc-events/kennedy-center-honors"
+    className="group inline-flex min-h-[50px] max-w-full items-center justify-center gap-5 border border-[#957e5e]/60 bg-transparent px-6 py-4 text-left text-[11px] font-semibold uppercase leading-5 tracking-[0.1em] text-[#806b43] transition-colors duration-300 hover:border-[#806b43] hover:bg-[#806b43] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#957e5e] motion-reduce:transition-none"
+  >
+    <span>Plan Kennedy Honors Transport</span>
+    <Arrow />
+  </a>
+</div>
           </Reveal>
         </div>
         <div className="mx-auto grid w-[calc(100%-32px)] max-w-[1520px] grid-cols-[0.7fr_1.6fr] items-center gap-3 md:w-[calc(100%-64px)] md:grid-cols-[0.8fr_1.5fr_0.8fr] md:gap-6">
