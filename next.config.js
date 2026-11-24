@@ -79,6 +79,26 @@ const nextConfig = {
         destination: "/diplomatic",
         statusCode: 301,
       },
+      {
+        source: "/burtonsville-md-to-washington-dca-airport-limo-black-car-service",
+        destination: "/",
+        statusCode: 301,
+      },
+      {
+        source: "/great-falls-va-to-washington-dca-airport-limo-black-car-service",
+        destination: "/",
+        statusCode: 301,
+      },
+      {
+        source: "/purcellville-va-to-washington-dca-airport-limo-black-car-service",
+        destination: "/",
+        statusCode: 301,
+      },
+      {
+        source: "/gainesville-va-to-washington-dca-airport-limo-black-car-service",
+        destination: "/",
+        statusCode: 301,
+      },
     ];
   },
 };
